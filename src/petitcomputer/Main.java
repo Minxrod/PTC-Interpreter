@@ -9,6 +9,7 @@ public class Main {
             Debug.setFlags(Debug.ALL);
         
         MenuGUI gui = new MenuGUI();
+        //test plz
         
         /*
         Thread guiThread = new Thread(gui);
