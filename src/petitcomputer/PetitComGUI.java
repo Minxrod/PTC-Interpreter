@@ -15,8 +15,8 @@ import static java.awt.event.KeyEvent.*;
  * @author minxr
  */
 public class PetitComGUI implements Runnable {
-    public final int WINDOW_WIDTH = 256;
-    public final int WINDOW_HEIGHT = 192;
+    public static final int WINDOW_WIDTH = 256;
+    public static final int WINDOW_HEIGHT = 192;
     
     private final static Object[] BUTTON = new Object[]{
         KeyEvent.VK_W,  //up

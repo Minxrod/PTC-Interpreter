@@ -9,11 +9,11 @@ class Resources {
     public Resources(){
         col0 = new COL(false);
         col0.setDefault("src/resource/COL0.PTC");
-        col0.createICM(); //unused for now
+        col0.createICM();
         
         col2 = new COL(true);
         col2.setDefault("src/resource/COL2.PTC");
-        col2.createICM(); //less used
+        col2.createICM();
         
         bgfu = new BGF(col0);
         bgfu.setDefault();

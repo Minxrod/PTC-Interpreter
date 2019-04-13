@@ -334,11 +334,11 @@ class Console implements ComponentPTC {
      * Creates a visual image of the console.
      */
     public Image createImage(){
-        BufferedImage image = new BufferedImage(CONSOLE_WIDTH * 8, CONSOLE_HEIGHT * 8, BufferedImage.TYPE_INT_ARGB);//BufferedImage.TYPE_BYTE_INDEXED, colors.getICM());
+        BufferedImage image = new BufferedImage(CONSOLE_WIDTH * 8, CONSOLE_HEIGHT * 8, BufferedImage.TYPE_BYTE_INDEXED, colors.getICM256());
         Graphics drawToImage = image.createGraphics();
         
-        drawToImage.setColor(new Color(0,0,0,0));
-        drawToImage.fillRect(0, 0, CONSOLE_WIDTH * 8, CONSOLE_HEIGHT * 8);
+        //drawToImage.setColor(new Color(0,0,0,0));
+        //drawToImage.fillRect(0, 0, CONSOLE_WIDTH * 8, CONSOLE_HEIGHT * 8);
         for (int y = 0; y < CONSOLE_HEIGHT; y++){
             for (int x = 0; x < CONSOLE_WIDTH; x++){
                 //System.out.println(characters[x][y]);

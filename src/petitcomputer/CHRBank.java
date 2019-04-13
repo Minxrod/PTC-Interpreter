@@ -63,12 +63,13 @@ public class CHRBank {
     }
     
     public Image getImage(int index, byte palette){
-        Image i = characters[index].getImage(palette);
+        return characters[index].getImage(colors, palette);
         
-        if (i == null)
-            i = characters[index].createImage(colors, palette);
+        //old check from when it returned null
+        //if (i == null)
+        //    i = characters[index].createImage(colors, palette);
             
-        return i;
+        //return i;
     }
     
     public Image getChrImage(int index, byte palette){
