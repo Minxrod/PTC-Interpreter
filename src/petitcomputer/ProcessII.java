@@ -634,6 +634,7 @@ public class ProcessII implements Runnable {
         Graphics g = image.createGraphics();
         
         //actual draw order will be based on draw priority, but this is unfinished for now.
+        g.fillRect(0, 0, PetitComGUI.WINDOW_WIDTH, PetitComGUI.WINDOW_HEIGHT);
         g.drawImage(graphics.createImage(0), 0, 0, null);
         g.drawImage(bg.createImage(0), 0, 0, null);
         g.drawImage(console.createImage(), 0, 0, null);

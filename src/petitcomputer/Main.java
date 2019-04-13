@@ -6,10 +6,9 @@ public class Main {
         if (args.length != 0)
             Debug.setFlags(Integer.valueOf(args[0]));
         else
-            Debug.setFlags(Debug.ALL);
+            Debug.setFlags(Debug.COLOR_FLAG);
         
         MenuGUI gui = new MenuGUI();
-        //test plz
         
         /*
         Thread guiThread = new Thread(gui);

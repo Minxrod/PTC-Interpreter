@@ -2,6 +2,7 @@ package petitcomputer;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 
 /**
  * A single character: component of sprite, background, etc.
@@ -32,32 +33,15 @@ public class CHR {
      * @return 
      */
     public BufferedImage createImage(COL col, byte pal){
-        image = new BufferedImage(8, 8, BufferedImage.TYPE_INT_ARGB);//BufferedImage.TYPE_BYTE_INDEXED, col.getICM(pal));
+        image = new BufferedImage(8, 8, BufferedImage.TYPE_BYTE_INDEXED, col.getICM16(pal));
         
         for (int y = 0; y < 8; y++){
             for(int x = 0; x < 4; x++){
                 int colorIndex1 = (data[x + 4 * y] & 0xF0) >>> 4;
                 int colorIndex2 = data[x + 4 * y] & 0x0F;
                 
-                short color555_1 = col.getColor(pal, colorIndex1);
-                short color555_2 = col.getColor(pal, colorIndex2);
-                int trans1, trans2; //transparency for index == 0
-                if (colorIndex1 == 0)
-                    trans1 = 0; //if index is 0, transparent,
-                else
-                    trans1 = 255; //if index is 1-15, opague;
-                
-                if (colorIndex2 == 0)
-                    trans2 = 0;
-                else
-                    trans2 = 255;
-                
-                
-                //System.out.println(col.getColor(c1, 15));
-                //pal.getColorData(c1));
-                //System.out.println("(" + color555_1 + "," + color555_2 + ")");
-                Color color1 = new Color(COL.getRedFromRGB555(color555_1), COL.getGreenFromRGB555(color555_1), COL.getBlueFromRGB555(color555_1), trans1);
-                Color color2 = new Color(COL.getRedFromRGB555(color555_2), COL.getGreenFromRGB555(color555_2), COL.getBlueFromRGB555(color555_2), trans2);
+                Color color1 = col.getColor(colorIndex1 + 16 * pal);
+                Color color2 = col.getColor(colorIndex2 + 16 * pal);
                 
                 image.setRGB(2 * x, y, color1.getRGB());
                 image.setRGB(2 * x + 1, y, color2.getRGB());
@@ -69,14 +53,20 @@ public class CHR {
     }
     
     /**
-     * Gets the stored character image created with createImage(); if the image is the wrong palette, returns null and relies on calling class to call createImage() with new palette.
+     * Gets the stored character image created with createImage(). 
+     * Palette is swapped with the correct 16-color ICM.
+     * Solution source: stackoverflow.com/a/29578717
+     * @param col
      * @param pal
      * @return 
      */
-    public BufferedImage getImage(int pal){
-        if (pal == savedPal)
-            return image;
-        return null;
+    public BufferedImage getImage(COL col, byte pal){
+        if (image == null)// || savedPal != pal)
+            createImage(col, (byte) pal); //should only create a new image the first time
+        WritableRaster wr = image.getRaster();
+        boolean iAPM = image.isAlphaPremultiplied();
+        
+        return new BufferedImage(col.getICM16(pal), wr, iAPM, null);
     }
     
 }

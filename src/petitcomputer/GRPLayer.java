@@ -16,8 +16,9 @@ public class GRPLayer {
     public GRPLayer(COL col){
         colors = col;
         gcolor = 0;
-        grp = new BufferedImage(256, 192, BufferedImage.TYPE_INT_ARGB);
+        grp = new BufferedImage(256, 192, BufferedImage.TYPE_BYTE_INDEXED, colors.getICM256());
         g = grp.createGraphics();
+        gcls();
     }
     
     public void gcolor(int c){
@@ -25,7 +26,8 @@ public class GRPLayer {
     }
     
     public void gcls(){
-        g.clearRect(0, 0, 256, 192);
+        g.setColor(colors.getColor(gcolor));
+        g.fillRect(0, 0, 256, 192);
     }
     
     public void gpset(int x, int y){
