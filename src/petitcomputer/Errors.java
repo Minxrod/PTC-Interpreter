@@ -27,6 +27,6 @@ public enum Errors {
     /**
      * Used when error type is unknown as a default error type.
      */
-    UNDEFINED_ERROR
-    
+    UNDEFINED_ERROR,
+    BREAK
 }

@@ -90,6 +90,17 @@ public class PetitComGUI implements Runnable {
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setAlwaysOnTop(true); //useful for testing
         
+        //somewhat (strucutrally) copied from https://stackoverflow.com/questions/4154780/jframe-catch-dispose-event. 
+        //Used to stop the thread from running when the window is closed.
+        frame.addWindowListener(new WindowAdapter() { 
+
+            @Override
+            public void windowClosing(WindowEvent evt) {
+                frame.dispose();
+                processor.breakProcess();
+            }
+        });
+        
         //upon creation of the GUI, ensure ProcessII is ready to run in it's own thread, able to launch a program if necessary.
         processor = new ProcessII();
         process = new Thread(processor);

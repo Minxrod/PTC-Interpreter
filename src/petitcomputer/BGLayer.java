@@ -13,11 +13,16 @@ public class BGLayer {
     int offsetX, offsetY;
     final int size;
     short tiles[][];
+    BufferedImage image;
+    Graphics g;
     
-    public BGLayer(CharsetPTC charset){
+    public BGLayer(CharsetPTC charset, COL col){
         this.chars = charset;
         size = 64;
         tiles = new short[size][size];
+        
+        image = new BufferedImage(512, 512, BufferedImage.TYPE_BYTE_INDEXED, col.getICM256());
+        g = image.createGraphics();
         
         offsetX = 0;
         offsetY = 0;
@@ -47,6 +52,7 @@ public class BGLayer {
      */
     public void bgput(int x, int y, int tile){
         tiles[x][y] = (short) tile;
+        g.drawImage(chars.getImage(tile % 1024, (byte) (tile / 4096)), 8 * x, 8 * y, null);
     }
     
     /**
@@ -80,6 +86,8 @@ public class BGLayer {
      */
     public void bgclr(){
         tiles = new short[size][size];
+        g.fillRect(0, 0, 512, 512);
+        
     }
     
     /**
@@ -106,8 +114,8 @@ public class BGLayer {
     }
     
     public Image createImage(){
-        BufferedImage image = new BufferedImage(256, 192, BufferedImage.TYPE_INT_ARGB);
-        Graphics g = image.createGraphics();
+        image = new BufferedImage(256, 192, BufferedImage.TYPE_INT_ARGB);
+        g = image.createGraphics();
         
         for (int x = 0; x < size; x++){
             for (int y = 0; y < size; y++){
@@ -117,5 +125,9 @@ public class BGLayer {
         }
         
         return image;
+    }
+    
+    public Image getImage(){
+        return image.getSubimage(-offsetX, -offsetY, PetitComGUI.WINDOW_WIDTH, PetitComGUI.WINDOW_HEIGHT);
     }
 }

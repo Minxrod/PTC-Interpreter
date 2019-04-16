@@ -19,7 +19,7 @@ public class Panel implements ComponentPTC {
     public Panel(BGF bgf, COL col, BGD bgd, ProcessII.Evaluator ev){
         eval = ev;
         console = new Console(bgf, col, ev);
-        back = new BGLayer(bgd);
+        back = new BGLayer(bgd, col);
         
         drawBGD();
         
@@ -131,7 +131,7 @@ public class Panel implements ComponentPTC {
             case "pnl":
                 main.drawImage(back.createImage(), 0, 0, null);
             case "off":
-                main.drawImage(console.createImage(), 0, 0, null);
+                main.drawImage(console.getImage(), 0, 0, null);
                 break;
             case "kya":
             case "kym":
