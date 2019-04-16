@@ -27,12 +27,15 @@ public class ProcessII implements Runnable {
     private final int GROUP_INPUT = 12;
     private final int GROUP_VARIABLE = 13;
     private final int GROUP_STRING = 14;
+    private final int GROUP_SYSTEM = 15;
     private final int GROUP_UNDEFINED = 99;
     
     volatile boolean pleaseLoad, pleaseRun; //uesd for cross-thread communication
+    boolean running;
     
     String fileName;
     File file;
+    
     
     Errors error;
     Resources resource;
@@ -637,7 +640,7 @@ public class ProcessII implements Runnable {
         g.fillRect(0, 0, PetitComGUI.WINDOW_WIDTH, PetitComGUI.WINDOW_HEIGHT);
         g.drawImage(graphics.createImage(0), 0, 0, null);
         g.drawImage(bg.createImage(0), 0, 0, null);
-        g.drawImage(console.createImage(), 0, 0, null);
+        g.drawImage(console.getImage(), 0, 0, null);
         
         return image;
     }
@@ -1573,7 +1576,7 @@ public class ProcessII implements Runnable {
     public void run(){
         pleaseLoad = false;
         pleaseRun = false;
-        boolean running = true;
+        running = true;
         
         while (running){
             if (pleaseLoad){
@@ -1592,4 +1595,10 @@ public class ProcessII implements Runnable {
             }
         }
     }
+    
+    public void breakProcess(){
+        running = false;
+        main.setError(Errors.BREAK);
+    }
+    
 }
