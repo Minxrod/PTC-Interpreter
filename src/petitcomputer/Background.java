@@ -31,18 +31,18 @@ public class Background implements ComponentPTC{
         
         layer = new BGLayer[2][2]; //[screen][layer]
         
-        layer[0][0] = new BGLayer(bg);
-        layer[0][1] = new BGLayer(bg);
-        layer[1][0] = new BGLayer(bg);
-        layer[1][1] = new BGLayer(bg);
+        layer[0][0] = new BGLayer(bg, col);
+        layer[0][1] = new BGLayer(bg, col);
+        layer[1][0] = new BGLayer(bg, col);
+        layer[1][1] = new BGLayer(bg, col);
     }
     
     public Image createImage(int screen) {
         BufferedImage image = new BufferedImage(256, 192, BufferedImage.TYPE_INT_ARGB);
         Graphics g = image.createGraphics();
         
-        g.drawImage(layer[screen][1].createImage(), 0, 0, null);
-        g.drawImage(layer[screen][0].createImage(), 0, 0, null);
+        g.drawImage(layer[screen][1].getImage(), 0, 0, null);
+        g.drawImage(layer[screen][0].getImage(), 0, 0, null);
         
         return image;
     }

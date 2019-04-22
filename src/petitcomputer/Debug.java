@@ -18,6 +18,7 @@ public class Debug {
     public static final int ACT_FLAG = 512;
     public static final int INPUT_FLAG = 1024;
     public static final int GUI_FLAG = 2048;
+    public static final int COLOR_FLAG = 4096;
     
     private static int flags = 0; //default: no debug
     

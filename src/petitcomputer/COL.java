@@ -3,6 +3,7 @@ package petitcomputer;
 import java.awt.Color;
 import java.awt.image.IndexColorModel;
 import java.io.*;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,9 +12,10 @@ import java.util.logging.Logger;
  * @author minxr
  */
 public class COL {
-    IndexColorModel[] icm; //for java Swing
-    short[][] colors; //RGB555 format (?)
-    boolean cm;
+    IndexColorModel icm256;
+    IndexColorModel[] icm16;
+    short[][] colors; //RGB555 format
+    boolean cm; //color mode
     
     public COL(boolean is256ColorMode){
         colors = new short[16][16];
@@ -83,31 +85,49 @@ public class COL {
     }
     
     /**
-     * Creates an IndexColorModel[] for BufferedImages. Each can be loaded individually.
+     * Creates IndexColorModel(s) for drawing with BufferedImages. 
+     * Each can be loaded individually.
+     * The 16 element models are intended for the palette of things like sprite, BG tiles, etc.
+     * The full 256 color model is intended for images like the full BG screen or graphics page.
      */
     public void createICM(){
-        icm = new IndexColorModel[16]; //array of palettes. Does not apply when using GRPS.
+        icm16 = new IndexColorModel[16]; //array of palettes. Does not apply when using GRPS.
         byte[] r,g,b;
-
+        byte[] u,v,w; //rgb for icm256
+        
+        u = new byte[256];
+        v = new byte[256];
+        w = new byte[256];
         for (int p = 0; p < 16; p++){
             r = new byte[16];
             g = new byte[16];
             b = new byte[16];
             for (int c = 0; c < 16; c++){
-                short col = colors[c / 16][c % 16];
+                short col = colors[p][c];
                 r[c] = (byte) getRedFromRGB555(col);
                 g[c] = (byte) getGreenFromRGB555(col);
                 b[c] = (byte) getBlueFromRGB555(col);
+                u[c+16*p] = r[c];
+                v[c+16*p] = g[c];
+                w[c+16*p] = b[c];
             }
-            icm[p] = new IndexColorModel(4, 16, r, g, b, 0);
+            //needs a separate icm for each palette
+            icm16[p] = new IndexColorModel(4, 16, r, g, b, 0);
         }
+        icm256 = new IndexColorModel(8, 256, u, v, w, 0);
         
-        //bits, size, r[] g[] b[] a[]
+        Debug.print(Debug.COLOR_FLAG, "256C" + icm256.toString() + " 16C:" + Arrays.toString(icm16));
+        //bits, size, r[] g[] b[] a
     }
     
-    public IndexColorModel getICM(int palette){
-        return icm[palette];
+    public IndexColorModel getICM16(int palette){
+        return icm16[palette];
     }
+    
+    public IndexColorModel getICM256(){
+        return icm256;
+    }
+    
     /**
      * Converts the native PTC format to this emulated form of the color.
      * @param col

@@ -16,8 +16,8 @@ import java.io.File;
  * @author minxr
  */
 public class PetitComGUI implements Runnable {
-    public final int WINDOW_WIDTH = 256;
-    public final int WINDOW_HEIGHT = 192;
+    public static final int WINDOW_WIDTH = 256;
+    public static final int WINDOW_HEIGHT = 192;
     
     private final static Object[] BUTTON = new Object[]{
         KeyEvent.VK_W,  //up
@@ -100,6 +100,7 @@ public class PetitComGUI implements Runnable {
         
         //upon creation of the GUI, ensure Process is ready to run in it's own thread, able to launch a program if necessary.
         processor = new Process(file);
+        
         process = new Thread(processor);
     }
         

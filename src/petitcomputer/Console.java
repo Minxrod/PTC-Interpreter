@@ -4,7 +4,10 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.image.Raster;
 import java.util.Arrays;
 import petitcomputer.CharacterPTC.Char;
 import petitcomputer.VirtualDevice.Evaluator;
@@ -25,6 +28,8 @@ class Console implements ComponentPTC {
     BGF font;
     COL colors;
     
+    BufferedImage image;
+    Graphics g;
     byte[][] characters;
     byte[][] color;
     int currentX, currentY;
@@ -48,7 +53,6 @@ class Console implements ComponentPTC {
         currentX = 0;
         currentY = 0;
         currentColor = 0;
-        //print(new StringPTC("This is text. Can you tell? Wow!:D amaze []\\;',./"));
     }
     
     public void setIn(Input input){
@@ -175,6 +179,7 @@ class Console implements ComponentPTC {
         for (int i = 0; i < text.getLength(); i++){
             characters[currentY][currentX] = text.getCharacter(i);
             color[currentY][currentX] = (byte) currentColor;
+            g.drawImage(font.getImage(Byte.toUnsignedInt(text.getCharacter(i)), (byte) currentColor), currentX * 8, currentY * 8, null);
             advanceCursor();
         }
         if (text.getTab())
@@ -221,6 +226,16 @@ class Console implements ComponentPTC {
             color[CONSOLE_HEIGHT-1] = new byte[CONSOLE_WIDTH];//similar, but fill with current color after
             Arrays.fill(color[CONSOLE_HEIGHT-1], (byte)currentColor);
             currentY = CONSOLE_HEIGHT-1;
+            
+            //scroll by copying lower part of image to new image, and making that the image saved.
+            /*BufferedImage shiftImage = new BufferedImage(PetitComGUI.WINDOW_WIDTH, PetitComGUI.WINDOW_HEIGHT, BufferedImage.TYPE_BYTE_INDEXED, colors.getICM256());
+            Raster r = image.getData(new Rectangle(0, 8, PetitComGUI.WINDOW_WIDTH, PetitComGUI.WINDOW_HEIGHT - 8));
+            shiftImage.setData(r); //copy old image to new image
+            System.out.println(shiftImage.toString());
+            //g = shiftImage.createGraphics();
+            //g.clearRect(0, PetitComGUI.WINDOW_HEIGHT - 8, PetitComGUI.WINDOW_WIDTH, 8);
+            
+            image = shiftImage;*/
         }
     }
     
@@ -244,6 +259,10 @@ class Console implements ComponentPTC {
     
         currentX = 0;
         currentY = 0;
+        
+        //creates (or recreates) an image for the console to draw to.
+        image = new BufferedImage(PetitComGUI.WINDOW_WIDTH, PetitComGUI.WINDOW_HEIGHT, BufferedImage.TYPE_BYTE_INDEXED, colors.getICM256());
+        g = image.createGraphics();
     }
     
     public void setVariables(VariablesII v){
@@ -314,11 +333,11 @@ class Console implements ComponentPTC {
      * Creates a visual image of the console.
      */
     public Image createImage(){
-        BufferedImage image = new BufferedImage(CONSOLE_WIDTH * 8, CONSOLE_HEIGHT * 8, BufferedImage.TYPE_INT_ARGB);//BufferedImage.TYPE_BYTE_INDEXED, colors.getICM());
+        image = new BufferedImage(CONSOLE_WIDTH * 8, CONSOLE_HEIGHT * 8, BufferedImage.TYPE_BYTE_INDEXED, colors.getICM256());
         Graphics drawToImage = image.createGraphics();
         
-        drawToImage.setColor(new Color(0,0,0,0));
-        drawToImage.fillRect(0, 0, CONSOLE_WIDTH * 8, CONSOLE_HEIGHT * 8);
+        //drawToImage.setColor(new Color(0,0,0,0));
+        //drawToImage.fillRect(0, 0, CONSOLE_WIDTH * 8, CONSOLE_HEIGHT * 8);
         for (int y = 0; y < CONSOLE_HEIGHT; y++){
             for (int x = 0; x < CONSOLE_WIDTH; x++){
                 //System.out.println(characters[x][y]);
@@ -331,5 +350,13 @@ class Console implements ComponentPTC {
             System.out.println(Arrays.toString(characters[i]));
         */
         return image;
+    }
+    
+    /**
+     * Method to return an image of the console screen in it's current state.
+     * @return 
+     */
+    public Image getImage(){
+        return createImage();
     }
 }
