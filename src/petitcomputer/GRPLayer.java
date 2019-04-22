@@ -9,9 +9,9 @@ import java.awt.image.BufferedImage;
  */
 public class GRPLayer {
     private int gcolor;
-    private BufferedImage grp;
-    private Graphics g;
-    private COL colors;
+    private final BufferedImage grp;
+    private final Graphics g;
+    private final COL colors;
     
     public GRPLayer(COL col){
         colors = col;

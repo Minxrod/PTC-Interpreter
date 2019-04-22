@@ -94,11 +94,11 @@ public class Input implements ComponentPTC{
         set = false;
         Debug.print(Debug.INPUT_FLAG, "Wait for INPUT");
         while (!set)
-        try {
-            Thread.sleep(10);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(Input.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Input.class.getName()).log(Level.SEVERE, null, ex);
+            }
     }
     
     public void waitForReset(){

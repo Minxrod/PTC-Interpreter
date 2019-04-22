@@ -6,7 +6,7 @@ public class Main {
         if (args.length != 0)
             Debug.setFlags(Integer.valueOf(args[0]));
         else
-            Debug.setFlags(0);
+            Debug.setFlags(Debug.ALL);
         
         MenuGUI gui = new MenuGUI();
         //test plz

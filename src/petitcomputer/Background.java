@@ -20,8 +20,9 @@ public class Background implements ComponentPTC{
     
     /**
      * Initializes a Background object with the given character set, palette, and evaluator object.
-     * @param bg
-     * @param col
+     * @param bg - background tileset
+     * @param col - color palette object
+     * @param ev - evaluator
      */
     public Background(BGU bg, COL col, Evaluator ev){
         bgu = bg;

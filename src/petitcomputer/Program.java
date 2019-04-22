@@ -451,17 +451,17 @@ public class Program implements ComponentPTC {
             //takes a label
             String label = argument.toString().toLowerCase();
             //finds a label
-            int location = items.size(); //default to end of program
+            int labelLocation = items.size(); //default to end of program
             for (int i = 0; i < items.size(); i++)
                 if (label.equals(items.get(i).toString().toLowerCase()))
                     if (i == 0 || items.get(i-1).getType() == VariablePTC.LINE_SEPARATOR){
-                        location = i;
+                        labelLocation = i;
                         break;
                 }
 
-            Debug.print(Debug.PROCESS_FLAG, "Location found: " + location + "\nLabel search for: " + label + "\nLabel found: " + items.get(location).toString());
+            Debug.print(Debug.PROCESS_FLAG, "Location found: " + labelLocation + "\nLabel search for: " + label + "\nLabel found: " + items.get(labelLocation).toString());
             //sets main location to that label
-            setLocation(location);
+            setLocation(labelLocation);
             //well shit, what if main isn't executing and instead it's a subobject like IF?
         }
 
@@ -474,19 +474,19 @@ public class Program implements ComponentPTC {
             //do it later.
             String label = argument.toString().toLowerCase();
             //find label
-            int location = items.size();
+            int labelLocation = items.size();
             for (int i = 0; i < items.size(); i++)
                 if (label.equals(items.get(i).toString().toLowerCase()))
                     if (i == 0 || items.get(i-1).getType() == VariablePTC.LINE_SEPARATOR){
-                        location = i;
+                        labelLocation = i;
                         break;
                 }
 
-            Debug.print(Debug.PROCESS_FLAG, "Location found: " + location + "\nLabel search for: " + label + "\nLabel found: " + items.get(location).toString());
+            Debug.print(Debug.PROCESS_FLAG, "Location found: " + labelLocation + "\nLabel search for: " + label + "\nLabel found: " + items.get(labelLocation).toString());
 
             int callLocation = getLocation(); //end of GOSUB command
 
-            setLocation(location);
+            setLocation(labelLocation);
             Errors err = execute();
 
             if (err == Errors.RETURN_WITHOUT_GOSUB)

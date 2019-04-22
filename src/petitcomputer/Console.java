@@ -35,8 +35,15 @@ class Console implements ComponentPTC {
         font = fontSet;
         colors = colorSet;
         
-        //used to just init arrays
-        cls();
+        characters = new byte[CONSOLE_HEIGHT][CONSOLE_WIDTH];
+        color = new byte[CONSOLE_HEIGHT][CONSOLE_WIDTH];
+        
+        for (int y = 0; y < CONSOLE_HEIGHT; y++){
+            for (int x = 0; x < CONSOLE_WIDTH; x++){
+                characters[y][x] = 0;
+                color[y][x] = 0;
+            }
+        }
         
         currentX = 0;
         currentY = 0;
@@ -113,35 +120,6 @@ class Console implements ComponentPTC {
         
         return error;
     }
-    
-    /*
-     * OLD VERSTION OF INPUT COMMAND: USED A SCANNER FOR TESTING AND I WAS LAZY. IT HAS SINCE BEEN REPLACED, NEVER USE THIS PLEASE.
-     * Gets keyboard input and stores it to the given variable.
-     * @param text
-     * @param variable
-     * @return 
-     */
-    /*public void input(StringPTC text, StringPTC variable){
-        print(text);
-        
-        int x = currentX;
-        int y = currentY; //save location for display
-        StringPTC result = new StringPTC(0);
-        while (in.button().getIntNumber() != 16 ||
-             !(in.keyboard().getIntNumber() != 15)){
-            locate(x, y);
-            print(result);
-            Debug.print(Debug.INPUT_FLAG, "key2int: " + in.keyboard().getIntNumber());
-            if (in.keyboard().getIntNumber() != 0)
-                result.add(in.inkey());
-        }
-        
-        System.out.println("INPUT var to store NAME: " + variable.toString());
-        if (vars.getVariable(variable).getType() == VariablePTC.NUMBER_LITERAL)
-            vars.setVariable(variable, result.getNumberFromString());
-        else //it's a string.
-            vars.setVariable(variable, result);
-    }*/
     
     /**
      * Command to receive text input from the user and store it to the given variable. Cannot type more than one character per key press (no key-repeat).
@@ -319,6 +297,7 @@ class Console implements ComponentPTC {
     }
     
     
+    @Override
     public VariablePTC func(StringPTC function, ArrayList<VariablePTC> args){
         switch (function.toString().toLowerCase()){
             case "chkchr$":

@@ -29,6 +29,9 @@ public class BGU implements CharsetPTC {
     
     /**
      * Generates an image from the given index and palette.
+     * @param index
+     * @param palette
+     * @return image of character 
      */
     @Override
     public Image getImage(int index, byte palette){

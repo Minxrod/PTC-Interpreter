@@ -79,15 +79,21 @@ public class Data implements ComponentPTC{
         
         StringPTC data = new StringPTC(0);
         Debug.print(Debug.DATA_FLAG, "Reading data");
-        while (isData){ //until hits comma or eol, continue getting elements of DATA.
-            if (program.get(currentData).getType() == VariablePTC.LINE_SEPARATOR)
-                isData = false;
-            else if (program.get(currentData).getType() == VariablePTC.ARG_SEPARATOR)
-                break; //it is still data (isData is true) but stop reading the data for now
-            else {
-                data.add(program.get(currentData).toStringPTC());
-                currentData++; //increment to next element
-                Debug.print(Debug.DATA_FLAG, "Got: " + data);
+        
+        OUTER:
+        while (isData) {
+            //until hits comma or eol, continue getting elements of DATA.
+            switch (program.get(currentData).getType()) {
+                case VariablePTC.LINE_SEPARATOR:
+                    isData = false;
+                    break;
+                case VariablePTC.ARG_SEPARATOR:
+                    break OUTER; //it is still data (isData is true) but stop reading the data for now
+                default:
+                    data.add(program.get(currentData).toStringPTC());
+                    currentData++; //increment to next element
+                    Debug.print(Debug.DATA_FLAG, "Got: " + data);
+                    break;
             }
         }
         currentData++; //move past comma or eol

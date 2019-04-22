@@ -53,8 +53,7 @@ public class StringPTC extends VariablePTC {
     
     public void add(byte character){
         byte[] newString = new byte[string.length + 1];
-        for (int i = 0; i < string.length; i++)
-            newString[i] = string[i];
+        System.arraycopy(string, 0, newString, 0, string.length);
         newString[string.length] = character;
         string = newString;
     }
@@ -100,8 +99,7 @@ public class StringPTC extends VariablePTC {
         if (newString.length > string.length)
             return;
         
-        for (int i = 0; i < newString.length; i++)
-            string[i] = newString[i];
+        System.arraycopy(newString, 0, string, 0, newString.length);
     }
     
     public void setString(byte[] newString){

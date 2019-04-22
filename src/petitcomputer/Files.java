@@ -6,8 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * File handler class. Does the initial file loading, as well as loads from within interpreted programs.
@@ -74,73 +72,11 @@ public class Files {
         StringPTC item;
         
         try {
-        while (position < program.length){
-            item = new StringPTC(0);
-            character = program[position];
-            //check character type
-            if (CharacterPTC.isLetter(character)){
-                do {
-                    //add char
-                    item.add(character);
-                    
-                    //get next char
-                    position++;
-                    character = program[position];
-                } while (CharacterPTC.isLetter(character) || CharacterPTC.isNumber(character) || (character == CharacterPTC.DOLLAR));    
-                int type = VariablePTC.STRING_REFERENCE;
-                
-                if (isCommand(item))
-                    type = VariablePTC.STRING_COMMAND;
-                if (isFunction(item))
-                    type = VariablePTC.STRING_FUNCTION;
-                if (isOperator(item))
-                    type = VariablePTC.STRING_OPERATOR;
-                
-                item.setType(type);
-                items.add(item);
-            } else if (CharacterPTC.isNumber(character)){
-                do {
-                    //add char
-                    item.add(character);
-                    
-                    //get next char
-                    position++;
-                    character = program[position];
-                } while (CharacterPTC.isNumber(character));
-                item.setType(VariablePTC.STRING_EXPRESSION); //pretty much useless
-                NumberPTC num = item.getNumberFromString();
-                num.setType(VariablePTC.NUMBER_LITERAL);
-                items.add(num);//item);
-            } else if (CharacterPTC.isSymbol(character)){
-                if (character == CharacterPTC.QUOTE){
-                    position++;
-                    character = program[position];
-                    while (character != CharacterPTC.QUOTE) {
-                        //add char
-                        item.add(character);
-
-                        //get next char
-                        position++;
-                        character = program[position];
-                    } //while (character != CharacterPTC.QUOTE);
-                    position++; //move past end quote
-                    item.setType(VariablePTC.STRING_LITERAL);
-                    items.add(item);
-                } else if (character == CharacterPTC.COMMENT){
-                    do {
-                        //add char
-                        //item.add(character);
-
-                        //get next char
-                        position++;
-                        character = program[position];
-                    } while (character != CharacterPTC.LINEBREAK);
-                } else if (character == CharacterPTC.COMMA) {
-                    item.add(character);
-                    item.setType(VariablePTC.ARG_SEPARATOR);
-                    items.add(item);
-                    position++;
-                } else if (character == CharacterPTC.LABEL) {
+            while (position < program.length){
+                item = new StringPTC(0);
+                character = program[position];
+                //check character type
+                if (CharacterPTC.isLetter(character)){
                     do {
                         //add char
                         item.add(character);
@@ -148,38 +84,100 @@ public class Files {
                         //get next char
                         position++;
                         character = program[position];
-                    } while (CharacterPTC.isLetter(character) || CharacterPTC.isNumber(character));    
-                    item.setType(VariablePTC.STRING_LABEL);
+                    } while (CharacterPTC.isLetter(character) || CharacterPTC.isNumber(character) || (character == CharacterPTC.DOLLAR));    
+                    int type = VariablePTC.STRING_REFERENCE;
+
+                    if (isCommand(item))
+                        type = VariablePTC.STRING_COMMAND;
+                    if (isFunction(item))
+                        type = VariablePTC.STRING_FUNCTION;
+                    if (isOperator(item))
+                        type = VariablePTC.STRING_OPERATOR;
+
+                    item.setType(type);
                     items.add(item);
-                } else if (CharacterPTC.isContainer(character)) { 
+                } else if (CharacterPTC.isNumber(character)){
+                    do {
+                        //add char
+                        item.add(character);
+
+                        //get next char
+                        position++;
+                        character = program[position];
+                    } while (CharacterPTC.isNumber(character));
+                    item.setType(VariablePTC.STRING_EXPRESSION); //pretty much useless
+                    NumberPTC num = item.getNumberFromString();
+                    num.setType(VariablePTC.NUMBER_LITERAL);
+                    items.add(num);//item);
+                } else if (CharacterPTC.isSymbol(character)){
+                    if (character == CharacterPTC.QUOTE){
+                        position++;
+                        character = program[position];
+                        while (character != CharacterPTC.QUOTE) {
+                            //add char
+                            item.add(character);
+
+                            //get next char
+                            position++;
+                            character = program[position];
+                        } //while (character != CharacterPTC.QUOTE);
+                        position++; //move past end quote
+                        item.setType(VariablePTC.STRING_LITERAL);
+                        items.add(item);
+                    } else if (character == CharacterPTC.COMMENT){
+                        do {
+                            //add char
+                            //item.add(character);
+
+                            //get next char
+                            position++;
+                            character = program[position];
+                        } while (character != CharacterPTC.LINEBREAK);
+                    } else if (character == CharacterPTC.COMMA) {
+                        item.add(character);
+                        item.setType(VariablePTC.ARG_SEPARATOR);
+                        items.add(item);
+                        position++;
+                    } else if (character == CharacterPTC.LABEL) {
+                        do {
+                            //add char
+                            item.add(character);
+
+                            //get next char
+                            position++;
+                            character = program[position];
+                        } while (CharacterPTC.isLetter(character) || CharacterPTC.isNumber(character));    
+                        item.setType(VariablePTC.STRING_LABEL);
+                        items.add(item);
+                    } else if (CharacterPTC.isContainer(character)) { 
+                        item.add(character);
+                        item.setType(VariablePTC.STRING_OPERATOR);
+                        items.add(item);
+                        position++;                                    
+                    } else {
+                        do {
+                            //add char
+                            item.add(character);
+
+                            //get next char
+                            position++;
+                            character = program[position];
+                        } while (CharacterPTC.isSymbol(character) && character != CharacterPTC.QUOTE);
+                        item.setType(VariablePTC.STRING_OPERATOR);
+                        items.add(item);
+                    }
+                } else if (CharacterPTC.isReturn(character)){
                     item.add(character);
-                    item.setType(VariablePTC.STRING_OPERATOR);
+                    item.setType(VariablePTC.LINE_SEPARATOR);
+
                     items.add(item);
-                    position++;                                    
+                    position++;
                 } else {
-                    do {
-                        //add char
-                        item.add(character);
-
-                        //get next char
-                        position++;
-                        character = program[position];
-                    } while (CharacterPTC.isSymbol(character) && character != CharacterPTC.QUOTE);
-                    item.setType(VariablePTC.STRING_OPERATOR);
-                    items.add(item);
+                    position++;
                 }
-            } else if (CharacterPTC.isReturn(character)){
-                item.add(character);
-                item.setType(VariablePTC.LINE_SEPARATOR);
-                
-                items.add(item);
-                position++;
-            } else {
-                position++;
             }
-        }
         } catch (Exception e){
-            System.err.println(e.getMessage() + Arrays.toString(e.getStackTrace()) + e.getCause());
+            System.err.println(e.getMessage() + Arrays.toString(e.getStackTrace()));
         }
         return items;
     }

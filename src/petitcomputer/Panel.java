@@ -47,7 +47,7 @@ public class Panel implements ComponentPTC {
     /**
      * Initializes the panel for keyboard usage. I brute-forced this manually because it seemed easier at the time. Don't question it.
      */
-    public void drawBGD(){
+    private void drawBGD(){
         
         /*int[] keyX = new int[]{ 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27,
                             0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30,

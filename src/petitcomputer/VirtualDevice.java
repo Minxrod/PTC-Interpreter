@@ -436,27 +436,34 @@ public class VirtualDevice implements ComponentPTC{
                 if (item.getType() == StringPTC.STRING_OPERATOR){
                     String op = item.toString();
                     //System.out.println("Unary?" + op);
-                    if (op.equals("not")){
-                        items.set(location, MathPTC.not((NumberPTC)items.get(location+1))); //do a not on a num
-                        items.remove(location+1); //it has been C O N S U M E D.
-                    } else if (op.equals("!")){
-                        items.set(location, MathPTC.logicalNot((NumberPTC)items.get(location+1)));
-                        items.remove(location+1); //C  O  N  S  U  M  E
-                    } else if (op.equals("-")){
-                        if (items.get(location-1).getType() != VariablePTC.NUMBER_LITERAL){
-                            items.set(location, MathPTC.negate((NumberPTC)items.get(location+1)));
-                            items.remove(location+1); //all will be E M U S N O C;-;-;-;
-                        } else
+                    switch (op) {
+                        case "not":
+                            items.set(location, MathPTC.not((NumberPTC)items.get(location+1))); //do a not on a num
+                            items.remove(location+1); //it has been C O N S U M E D.
+                            break;
+                        case "!":
+                            items.set(location, MathPTC.logicalNot((NumberPTC)items.get(location+1)));
+                            items.remove(location+1); //C  O  N  S  U  M  E
+                            break;
+                        case "-":
+                            if (items.get(location-1).getType() != VariablePTC.NUMBER_LITERAL){
+                                items.set(location, MathPTC.negate((NumberPTC)items.get(location+1)));
+                                items.remove(location+1); //all will be E M U S N O C;-;-;-;
+                            } else
+                                location--;
+                            break;
+                        case ";":
+                            //create a STRING from whatever was here, and make sure no newlines.
+                            StringPTC temp = items.get(location-1).toStringPTC();
+                            temp.setLine(false);
+                            items.set(location, temp);
+                            items.remove(location-1);
                             location--;
-                    } else if (op.equals(";")){
-                        //create a STRING from whatever was here, and make sure no newlines.
-                        StringPTC temp = items.get(location-1).toStringPTC();
-                        temp.setLine(false);
-                        items.set(location, temp);
-                        items.remove(location-1);
-                        location--;
-                    } else
-                        location--;
+                            break;
+                        default:
+                            location--;
+                            break;
+                    }
                 } else
                     location--;
             }
@@ -534,20 +541,26 @@ public class VirtualDevice implements ComponentPTC{
                 if (item.getType() == StringPTC.STRING_OPERATOR){
                     String op = item.toString();
                     //System.out.println("MDM?" + op);
-                    if (op.equals("*")){
-                        items.set(location, MathPTC.mult((NumberPTC)items.get(location-1), (NumberPTC)items.get(location+1)));
-                        items.remove(location-1);
-                        items.remove(location); //they have been C O N S U M E
-                    } else if (op.equals("/")){
-                        items.set(location, MathPTC.div((NumberPTC)items.get(location-1), (NumberPTC)items.get(location+1)));
-                        items.remove(location-1);
-                        items.remove(location);
-                    } else if (op.equals("%")){
-                        items.set(location, MathPTC.mod((NumberPTC)items.get(location-1), (NumberPTC)items.get(location+1)));
-                        items.remove(location-1);
-                        items.remove(location);
-                    } else
-                        location++;
+                    switch (op) {
+                        case "*":
+                            items.set(location, MathPTC.mult((NumberPTC)items.get(location-1), (NumberPTC)items.get(location+1)));
+                            items.remove(location-1);
+                            items.remove(location); //they have been C O N S U M E
+                            break;
+                        case "/":
+                            items.set(location, MathPTC.div((NumberPTC)items.get(location-1), (NumberPTC)items.get(location+1)));
+                            items.remove(location-1);
+                            items.remove(location);
+                            break;
+                        case "%":
+                            items.set(location, MathPTC.mod((NumberPTC)items.get(location-1), (NumberPTC)items.get(location+1)));
+                            items.remove(location-1);
+                            items.remove(location);
+                            break;
+                        default:
+                            location++;
+                            break;
+                    }
                 } else
                     location++;
             }       
@@ -563,23 +576,31 @@ public class VirtualDevice implements ComponentPTC{
                 if (item.getType() == StringPTC.STRING_OPERATOR){
                     String op = item.toString();
                     //System.out.println("AS?" + op);
-                    if (op.equals("+")){
-                        if (items.get(location-1).getType() == VariablePTC.NUMBER_LITERAL &&
-                            items.get(location+1).getType() == VariablePTC.NUMBER_LITERAL){
-                            items.set(location, MathPTC.add((NumberPTC)items.get(location-1), (NumberPTC)items.get(location+1)));
+                    switch (op) {
+                        case "+":
+                            if (items.get(location-1).getType() == VariablePTC.NUMBER_LITERAL &&
+                                    items.get(location+1).getType() == VariablePTC.NUMBER_LITERAL){
+                                items.set(location, MathPTC.add((NumberPTC)items.get(location-1), (NumberPTC)items.get(location+1)));
+                                items.remove(location-1);
+                                items.remove(location); //they have been C O N S U M E
+                            } else if (items.get(location-1).getType() == VariablePTC.STRING_LITERAL &&
+                                    items.get(location+1).getType() == VariablePTC.STRING_LITERAL){
+                                //do some string math or something
+                                StringPTC first = (StringPTC) items.get(location-1);
+                                first.add((StringPTC) items.get(location+1));
+                                items.set(location, first);
+                                items.remove(location-1);
+                                items.remove(location);
+                            }   break;
+                        case "-":
+                            items.set(location, MathPTC.sub((NumberPTC)items.get(location-1), (NumberPTC)items.get(location+1)));
                             items.remove(location-1);
-                            items.remove(location); //they have been C O N S U M E
-                        } else if (items.get(location-1).getType() == VariablePTC.STRING_LITERAL &&
-                                   items.get(location+1).getType() == VariablePTC.STRING_LITERAL){
-                            //do some math or something
-                            Debug.print(Debug.ALL, "Please remind the developer to implement string addition. Thanks!");
-                        }
-                    } else if (op.equals("-")){
-                        items.set(location, MathPTC.sub((NumberPTC)items.get(location-1), (NumberPTC)items.get(location+1)));
-                        items.remove(location-1);
-                        items.remove(location);
-                    } else
-                        location++;
+                            items.remove(location);
+                            break;
+                        default:
+                            location++;
+                            break;
+                    }
                 } else
                     location++;
             }       
