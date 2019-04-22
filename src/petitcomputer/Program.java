@@ -2,6 +2,7 @@ package petitcomputer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import petitcomputer.CharacterPTC.Char;
 import petitcomputer.VirtualDevice.Evaluator;
 
 /**
@@ -9,7 +10,7 @@ import petitcomputer.VirtualDevice.Evaluator;
  * Sends commands to the VirtualDevice for action.
  * @author minxr
  */
-public class Program {
+public class Program implements ComponentPTC {
     Code code;
     VirtualDevice device;
     VariablesII vars;
@@ -27,6 +28,55 @@ public class Program {
         device = vd;
         vars = device.getVars();
         eval = device.getEval();
+    }
+    
+    @Override
+    public Errors act(StringPTC command, ArrayList<ArrayList> arguments){
+        Debug.print(Debug.ACT_FLAG, "ACT PROCESS: " + command.toString());
+        switch (command.toString().toLowerCase()){
+            case "end":
+                //jump to program end :)
+                code.setError(Errors.UNDEFINED_ERROR);
+                break;
+            case "wait":
+                NumberPTC frames = (NumberPTC) eval.eval(arguments.get(0));
+                
+                code.wait(frames.getIntNumber());
+                break;
+            case "if":
+                code.conditional(arguments);
+                break;
+            case "then":
+                //will never run unless an IF is missing. So, return an error.
+                code.setError(Errors.UNDEFINED_ERROR);
+                break;
+            case "else":
+                //means that a then block has ended.
+                //Skip to EOL.
+                code.to_eol();
+                //code.readUntil(items, new StringPTC(Character.toString((char)CharacterPTC.LINEBREAK)));
+                break;
+            case "goto":
+                StringPTC label = (StringPTC) eval.eval(arguments.get(0));
+                
+                code.go_to(label);
+                break;
+            case "on":
+                code.on(arguments);
+                break;
+            case "for":
+                code.for_to(arguments);
+                break;
+            case "next":
+                code.next();
+                break;
+        }
+        return null;
+    }
+    
+    @Override
+    public VariablePTC func(StringPTC function, ArrayList<VariablePTC> args) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     /**
@@ -227,6 +277,315 @@ public class Program {
         public int getLocation(){
             return location;
         }
+        
+        /*
+         * CODE FUNCTIONS + COMMANDS
+         * Stuff that requires the code to function.
+         */
 
+        public void for_to(ArrayList<ArrayList> args){
+            ArrayList<VariablePTC> arguments = new ArrayList<>();
+
+            for (ArrayList arg : args)
+                arguments.addAll(arg);
+            //arguments is more or less a list of code now
+
+            ArrayList<VariablePTC> variable = new ArrayList<>();
+            ArrayList<VariablePTC> expression = new ArrayList<>();
+            ArrayList<VariablePTC> comparison = new ArrayList<>();
+            ArrayList<VariablePTC> increment = new ArrayList<>();
+
+            int i = 0;
+            int toLocation = 0;     //ints not booleans
+            int stepLocation = 0;   //in case it's useful later
+            int equalLocation = 0;  //who knows if it helped
+
+            do {
+                String arg = arguments.get(i).toString().toLowerCase();
+
+                switch (arg) {
+                    case "to":
+                        toLocation = i + 1;
+                        break;
+                    case "step":
+                        stepLocation = i + 1;
+                        break;
+                    case "=":
+                        equalLocation = i;
+                        expression.add(arguments.get(i));
+                        break;
+                    default: //cool
+                        if (equalLocation == 0){ //not end of variable
+                            variable.add(arguments.get(i));
+                            expression.add(arguments.get(i));
+                        }else if (toLocation == 0) //hasn't found end of initialization expression
+                            expression.add(arguments.get(i));
+                        else if (stepLocation == 0) //hasn't found the STEP in (FOR...TO...STEP...)
+                            comparison.add(arguments.get(i));
+                        else //there's a step, read until end of line
+                            increment.add(arguments.get(i));
+                        break;
+                }
+
+                i++;//next element
+            } while (i < arguments.size());
+
+            if (increment.isEmpty())
+                increment.add(new NumberPTC(1));
+
+            //initialize variable
+            Code init = new Code(expression, 0);
+            init.execute();
+
+            //exit condition
+            StringPTC lessThan = new StringPTC("<=");
+            lessThan.setType(VariablePTC.STRING_OPERATOR);
+
+            ArrayList<VariablePTC> condition = new ArrayList<>();
+            condition.addAll(variable);             //variable
+            condition.add(lessThan);                //<=
+            condition.addAll(comparison);           //end state
+
+            //step equation
+            StringPTC equals = new StringPTC("=");
+            equals.setType(VariablePTC.STRING_OPERATOR);
+
+            StringPTC plus = new StringPTC("+");
+            plus.setType(VariablePTC.STRING_OPERATOR);
+
+            StringPTC newLine = new StringPTC(Character.toString((char)CharacterPTC.LINEBREAK));
+            newLine.setType(VariablePTC.LINE_SEPARATOR);
+
+            ArrayList<VariablePTC> steps = new ArrayList<>();
+            steps.addAll(variable);                 //variable
+            steps.add(equals);                      //=
+            steps.addAll(variable);                 //variable
+            steps.add(plus);                        //+
+            steps.addAll(increment);                //step
+           // steps.add(newLine);                     //(endline)
+
+            Code step = new Code(steps, 0);
+
+            int endOfFor = getLocation(); //location is at the end of the FOR-TO[-STEP]. 
+
+            while (((NumberPTC)eval.eval(condition)).getIntNumber() == 1){
+                setLocation(endOfFor);
+                Errors err = execute();
+                //gets here after hitting "next"
+                if (err == Errors.NEXT_WITHOUT_FOR)
+                    setError(null); //there's a FOR so it's actually fine.
+
+                Debug.print(Debug.PROCESS_FLAG, "FOR LOOP DEBUG\nXXXXXXXXXXXXXXXXXXXXx\n" + expression.toString() + "\n" + condition.toString() + "\n" + steps.toString());
+                step.setLocation(0); //reset increment
+                step.execute(); //lincrement the var
+            }
+            //loop is done.
+
+            //System.out.println(Evaluator.eval(condition).toString());
+        }
+
+        public void next(){
+            setError(Errors.NEXT_WITHOUT_FOR); //main has encountered a next
+        }
+
+        /**
+         * Return function.
+         */
+        public void ret(){
+            setError(Errors.RETURN_WITHOUT_GOSUB);
+        }
+
+        /**
+         * Depending on a given expression, jump to a set location.
+         * @param args
+         */
+        public void on(ArrayList<ArrayList> args){
+            ArrayList<VariablePTC> arguments = new ArrayList<>(); //converts multiarg to a single list of args
+
+            for (ArrayList arg : args)
+                arguments.addAll(arg);
+
+            ArrayList<VariablePTC> expression = new ArrayList<>();
+            ArrayList<VariablePTC> labels = new ArrayList<>();
+
+            int i = 0;
+            boolean isGosub = false;
+            int goLocation = 0;
+            do {
+                String arg = arguments.get(i).toString().toLowerCase();
+
+                switch (arg) {
+                    case "gosub":
+                        isGosub = true;
+                    case "goto":
+                        goLocation = i;
+                        break;
+                    default: //cool
+                        if (goLocation == 0) //hasn't found end of 'on' expression
+                            expression.add(arguments.get(i));
+                        else
+                            labels.add(arguments.get(i));
+                        break;
+                }
+
+                i++;//next element
+            } while (i < arguments.size());
+
+            Debug.print(Debug.PROCESS_FLAG, "ON expression: " + expression.toString());
+            Debug.print(Debug.PROCESS_FLAG, "GOTO/SUB: " + labels.toString());
+
+            //evaluate expression a
+            NumberPTC result = (NumberPTC) eval.eval(expression);
+
+            if (!isGosub)
+                go_to((StringPTC) labels.get(result.getIntNumber()));
+            else
+                gosub((StringPTC) labels.get(result.getIntNumber()));
+        }
+
+        /**
+         * GOTO function - sets the main location of the program to the location of the given label.
+         * @param argument
+         */
+        public void go_to(StringPTC argument){
+            //takes a label
+            String label = argument.toString().toLowerCase();
+            //finds a label
+            int location = items.size(); //default to end of program
+            for (int i = 0; i < items.size(); i++)
+                if (label.equals(items.get(i).toString().toLowerCase()))
+                    if (i == 0 || items.get(i-1).getType() == VariablePTC.LINE_SEPARATOR){
+                        location = i;
+                        break;
+                }
+
+            Debug.print(Debug.PROCESS_FLAG, "Location found: " + location + "\nLabel search for: " + label + "\nLabel found: " + items.get(location).toString());
+            //sets main location to that label
+            setLocation(location);
+            //well shit, what if main isn't executing and instead it's a subobject like IF?
+        }
+
+        /**
+         * GOSUB: jumps to a sub routine and saves the jump location. Returns to the location after hitting a RETURN.
+         * @param argument
+         * @return 
+         */
+        public Errors gosub(StringPTC argument){
+            //do it later.
+            String label = argument.toString().toLowerCase();
+            //find label
+            int location = items.size();
+            for (int i = 0; i < items.size(); i++)
+                if (label.equals(items.get(i).toString().toLowerCase()))
+                    if (i == 0 || items.get(i-1).getType() == VariablePTC.LINE_SEPARATOR){
+                        location = i;
+                        break;
+                }
+
+            Debug.print(Debug.PROCESS_FLAG, "Location found: " + location + "\nLabel search for: " + label + "\nLabel found: " + items.get(location).toString());
+
+            int callLocation = getLocation(); //end of GOSUB command
+
+            setLocation(location);
+            Errors err = execute();
+
+            if (err == Errors.RETURN_WITHOUT_GOSUB)
+                setLocation(callLocation); //RETURN lends to here
+            else
+                return err;
+
+            return null;
+        }
+
+        /**
+         * IF statements, but using PTC logic. 
+         * @param args 
+         */
+        public void conditional(ArrayList<ArrayList> args){
+            ArrayList<VariablePTC> arguments = new ArrayList<>();
+
+            for (ArrayList arg : args)
+                arguments.addAll(arg);        
+            //arguments roughly of form (expression THEN statement(s) [ELSE statements])
+
+            //read until THEN or GOTO: from beginning to here is expression to evaluate.
+            ArrayList<VariablePTC> expression = new ArrayList<>();
+            ArrayList<VariablePTC> thenCode = new ArrayList<>();
+            ArrayList<VariablePTC> elseCode = new ArrayList<>();
+
+            int i = 0;
+            int thenLocation = 0;
+            int elseLocation = 0;
+            do {
+                String arg = arguments.get(i).toString().toLowerCase();
+
+                switch (arg) {
+                    case "then":
+                        thenLocation = i + 1;
+                        break;
+                    case "goto":
+                        if (thenLocation == 0) //prevent "...THEN <something>:GOTO..." from breaking and skipping something, right?
+                            thenLocation = i;
+                        break;
+                    case "else":
+                        elseLocation = i + 1;
+                        break;
+                    default: //obsolete, but good for debug and might be useful later
+                        if (thenLocation == 0) //hasn't found end of expression
+                            expression.add(arguments.get(i));
+                        else if (elseLocation == 0) //hasn't found an ELSE yet
+                            thenCode.add(arguments.get(i));
+                        else  //at this point, it will go until it hits the end of the list, and is definitely an else block.
+                            elseCode.add(arguments.get(i));
+                        break;
+                }
+
+                i++;//next element
+            } while (i < arguments.size());            
+
+            Debug.print(Debug.PROCESS_FLAG, Arrays.toString(expression.toArray()));
+            Debug.print(Debug.PROCESS_FLAG, Arrays.toString(thenCode.toArray()));
+            Debug.print(Debug.PROCESS_FLAG, Arrays.toString(elseCode.toArray()));
+
+            NumberPTC result = (NumberPTC) eval.eval(expression); //condition of IF: true or false? (really, 0 or !0)
+
+            //Code then = new Code(thenCode, 0);
+            //Code notThen = new Code(elseCode, 0);
+
+            Debug.print(Debug.PROCESS_FLAG, "result:" + result.toString());
+
+            StringPTC go = new StringPTC("GOTO");
+            go.setType(VariablePTC.STRING_COMMAND);
+
+            //THEN...LABEL        
+
+            //THEN ...CODE... [ELSE]...
+            if (result.getDoubleNumber() != 0){
+                if (thenCode.get(0).getType() == VariablePTC.STRING_LABEL){
+                    go_to((StringPTC) thenCode.get(0));
+                } else 
+                    setLocation(getLocation() - arguments.size() + thenLocation); //go from end of IF back to beginning and add the offset of the THEN.
+                //(conditional(args) only has a piece of the whole program and thus locations are off by that much.)
+            } else //ELSE ...CODE
+                if (elseLocation != 0)
+                    setLocation(getLocation() - arguments.size() + elseLocation); //Same thing with the added condition that an else has to exist for it to be used. :D
+        }
+        /**
+         * Waits the desired number of frames.
+         * @param frames 
+         */
+        public void wait(int frames){
+            try {
+                Thread.sleep(frames * 1000 / 60); 
+            } catch (InterruptedException ex) {
+            }
+        }
+        
+        /**
+         * Skips to the end of the line.
+         */
+        public void to_eol(){
+            readUntil(items, Char.LINEBREAK.getStringPTC()); //new StringPTC(Character.toString((char)CharacterPTC.LINEBREAK)));
+        }
     }
 }

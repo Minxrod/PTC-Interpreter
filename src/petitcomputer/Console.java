@@ -93,7 +93,7 @@ class Console implements ComponentPTC {
      */
     public int print(VariablePTC variable){
         int error = 0;
-        System.out.println("PRINT branch:" + variable.toString());
+        Debug.print(Debug.CONSOLE_FLAG, "PRINT branch:" + variable.toString());
         
         //if (variable == null)
             //return error;
@@ -277,7 +277,7 @@ class Console implements ComponentPTC {
      */
     @Override
     public Errors act(StringPTC command, ArrayList<ArrayList> arguments){
-        System.out.println("ACT CONSOLE: " + command.toString() + "ARGS:" + arguments.toString());
+        Debug.print(Debug.ACT_FLAG, "ACT CONSOLE: " + command.toString() + "ARGS:" + arguments.toString());
         switch (command.toString().toLowerCase()){
             case "print":
                 for (ArrayList argument : arguments) {
@@ -311,7 +311,7 @@ class Console implements ComponentPTC {
                 input(text, var);
                 break;
             default:
-                System.err.println("Conolse ACT error: " + command.toString());
+                Debug.print(Debug.ACT_FLAG, "Console ACT error: " + command.toString());
                 break;
         }
         

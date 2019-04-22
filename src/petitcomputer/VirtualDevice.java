@@ -133,8 +133,8 @@ public class VirtualDevice implements ComponentPTC{
             case GROUP_CONSOLE:
                 console.act(command, args);
                 break;
-            case GROUP_PROCESS:
-                //act(command, args); //lmao accidental recursion
+            case GROUP_CODE:
+                program.act(command, args);
                 break;
             case GROUP_BACKGROUND:
                 bg.act(command, args);
@@ -204,7 +204,8 @@ public class VirtualDevice implements ComponentPTC{
                 break;
             case "visible":
                 group = GROUP_PROCESS;
-                break;case "if":
+                break;
+            case "if":
             case "then":
             case "else":
             case "goto":
