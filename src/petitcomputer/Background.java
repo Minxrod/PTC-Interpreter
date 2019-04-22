@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import petitcomputer.VirtualDevice.Evaluator;
 
 /**
  *
@@ -13,7 +14,7 @@ public class Background implements ComponentPTC{
     BGU bgu;
     COL colors;
     BGLayer[][] layer;
-    ProcessII.Evaluator eval;
+    Evaluator eval;
     
     int bgpage, bglayer;
     
@@ -21,9 +22,8 @@ public class Background implements ComponentPTC{
      * Initializes a Background object with the given character set, palette, and evaluator object.
      * @param bg
      * @param col
-     * @param ev 
      */
-    public Background(BGU bg, COL col, ProcessII.Evaluator ev){
+    public Background(BGU bg, COL col, Evaluator ev){
         bgu = bg;
         colors = col;
         eval = ev;

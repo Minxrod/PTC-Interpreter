@@ -6,20 +6,21 @@
 package petitcomputer;
 
 import java.util.ArrayList;
+import petitcomputer.VirtualDevice.Evaluator;
 
 /**
  * Class to store and find DATA statements.
  * @author minxr
  */
 public class Data implements ComponentPTC{
-    ProcessII.Evaluator eval;
+    Evaluator eval;
     VariablesII vars;
       
     ArrayList<VariablePTC> program;
     int currentData;
     boolean isData;
     
-    public Data(VariablesII variables, ProcessII.Evaluator ev){
+    public Data(VariablesII variables, Evaluator ev){
         eval = ev;
         currentData = 0;
         isData = false;

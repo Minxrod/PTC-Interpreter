@@ -7,15 +7,16 @@ package petitcomputer;
 
 import java.awt.Image;
 import java.util.ArrayList;
+import petitcomputer.VirtualDevice.Evaluator;
 
 /**
  *
  * @author minxr
  */
 public class Sound implements ComponentPTC {
-    ProcessII.Evaluator eval;
+    Evaluator eval;
     
-    public Sound(ProcessII.Evaluator ev){
+    public Sound(Evaluator ev){
         eval = ev;
     }
     

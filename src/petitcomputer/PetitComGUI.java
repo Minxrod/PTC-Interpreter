@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import static java.awt.event.KeyEvent.*;
+import java.io.File;
 
 /**
  *
@@ -39,7 +40,7 @@ public class PetitComGUI implements Runnable {
     int key;
     
     Thread process;
-    ProcessII processor;
+    Process processor;
     
     Timer t;
     JFrame frame;
@@ -50,7 +51,14 @@ public class PetitComGUI implements Runnable {
     boolean pleaseLoad = false;
     boolean pleaseRun = false;
     
-    public PetitComGUI(){
+    /**
+     * Creates a new GUI window to display the results of a running PTC program.
+     * The supplied file will be loaded and ran in a separate thread from the GUI.
+     * The GUI thread itself just updates the GUI every frame,
+     * at an intended 50FPS.
+     * @param file - initial program file.
+     */
+    public PetitComGUI(File file){
         key = 0;
         button = 0;
         
@@ -90,19 +98,19 @@ public class PetitComGUI implements Runnable {
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setAlwaysOnTop(true); //useful for testing
         
-        //upon creation of the GUI, ensure ProcessII is ready to run in it's own thread, able to launch a program if necessary.
-        processor = new ProcessII();
+        //upon creation of the GUI, ensure Process is ready to run in it's own thread, able to launch a program if necessary.
+        processor = new Process(file);
         process = new Thread(processor);
     }
         
     /**
-     * Starts ProcessII of PetitComGUI.
+     * Starts Process of PetitComGUI.
      */
     public void start(){
         process.start();
     }
     
-    public ProcessII getProcess(){
+    public Process getProcess(){
         return processor;
     }
 
@@ -137,7 +145,7 @@ public class PetitComGUI implements Runnable {
         @Override
         public synchronized void actionPerformed(ActionEvent e) {
             frame.repaint();
-            processor.setInputs(button, key);
+            processor.setInput(button, key);
         }
     }
     

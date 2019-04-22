@@ -7,22 +7,25 @@ package petitcomputer;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import petitcomputer.VirtualDevice.Evaluator;
 
 /**
  *
  * @author minxr
  */
 public class Graphic implements ComponentPTC {
-    ProcessII.Evaluator eval;
+    Evaluator eval;
     GRPLayer[] layer;
     int displayLayer[];
     int drawLayer[];
     int gpage;
     
-    public Graphic(ProcessII.Evaluator ev, COL col){
+    public Graphic(COL col, Evaluator ev){
         layer = new GRPLayer[4];
-        for (int i = 0; i < layer.length; i++)
+        for (int i = 0; i < layer.length; i++){
             layer[i] = new GRPLayer(col);
+            layer[i].gcls();
+        }
         displayLayer = new int[2]; //number of screens is always 2.
         drawLayer = new int[2];
         displayLayer[0] = 0;

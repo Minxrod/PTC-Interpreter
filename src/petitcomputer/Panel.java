@@ -4,19 +4,20 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import petitcomputer.VirtualDevice.Evaluator;
 
 /**
  * Lower screen keyboard, text, and panel graphics
  * @author minxr
  */
 public class Panel implements ComponentPTC {
-    ProcessII.Evaluator eval;
+    Evaluator eval;
     Console console;
     BGLayer back;
     StringPTC pnltype;
     //some BG element
     
-    public Panel(BGF bgf, COL col, BGD bgd, ProcessII.Evaluator ev){
+    public Panel(BGF bgf, COL col, BGD bgd, Evaluator ev){
         eval = ev;
         console = new Console(bgf, col, ev);
         back = new BGLayer(bgd);

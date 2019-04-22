@@ -8,13 +8,6 @@ import java.util.ArrayList;
  */
 public interface ComponentPTC {
     
-    /*
-     * Creates the visual representation of the component.
-     * @param upper
-     * @return 
-     */
-    //public Image createImage(int upper);
-    
     /**
      * Handles commands passed to the component and modifies its data.
      * @param command
@@ -24,7 +17,7 @@ public interface ComponentPTC {
     public Errors act(StringPTC command, ArrayList<ArrayList> args);
     
     /**
-     * Uses the given function with given arguments to return a single value in VariablePTC format..
+     * Uses the given function with given arguments to return a single value in VariablePTC format.
      * @param function
      * @param args
      * @return 

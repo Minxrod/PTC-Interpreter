@@ -58,7 +58,9 @@ public class MenuGUI {
                 int c = files.showOpenDialog(frame);
                 
                 if (c == JFileChooser.APPROVE_OPTION){
-                    PetitComGUI ptcgui = new PetitComGUI();
+                    Debug.print(Debug.GUI_FLAG, files.getSelectedFile().toString());
+                    PetitComGUI ptcgui = new PetitComGUI(files.getSelectedFile());
+                    
                     Thread ptc = new Thread(ptcgui);
                     ptcgui.start();
                     ptc.start();
@@ -68,10 +70,7 @@ public class MenuGUI {
                     } catch (InterruptedException ex) {
                         Logger.getLogger(MenuGUI.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    //Debug.print(Debug.GUI_FLAG, files.getSelectedFile());
-                    ptcgui.getProcess().setFile(files.getSelectedFile()); //fix later, it works for now
-                    ptcgui.getProcess().pleaseLoad();
-                    ptcgui.getProcess().pleaseRun();
+                    //ptcgui.getProcess().setFile(files.getSelectedFile()); //fix later, it works for now
                     
 
                     

@@ -6,7 +6,7 @@ import java.awt.Image;
  * Class that contains data for BGU characters.
  * @author minxr
  */
-class BGU implements CharsetPTC {
+public class BGU implements CharsetPTC {
     CHRBank[] bgu;
     
     public BGU(COL col){

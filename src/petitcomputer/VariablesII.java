@@ -1,13 +1,14 @@
 package petitcomputer;
 
 import java.util.ArrayList;
+import petitcomputer.VirtualDevice.Evaluator;
 
 /**
  * Attempt at a less bad variable storage, with added functionality for finding data from a variable name.
  * @author minxr
  */
 public class VariablesII {
-    ProcessII.Evaluator eval;
+    Evaluator eval;
     
     ArrayList<VariablePTC> vars;
     ArrayList<StringPTC> name;
@@ -16,7 +17,7 @@ public class VariablesII {
      * Initializes all of the relevant variable data and names. Default is an empty list of names and varables: one may want to add system variables to it first, to prevent name-stealing.
      * @param ev
      */
-    public VariablesII(ProcessII.Evaluator ev){
+    public VariablesII(Evaluator ev){
         eval = ev;
         vars = new ArrayList<>();
         name = new ArrayList<>();

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.awt.Color;
 import java.util.Arrays;
 import petitcomputer.CharacterPTC.Char;
+import petitcomputer.VirtualDevice.Evaluator;
 
 /**
  * The main text console of PTC.
@@ -14,7 +15,7 @@ import petitcomputer.CharacterPTC.Char;
  */
 class Console implements ComponentPTC {
     VariablesII vars;
-    ProcessII.Evaluator eval;
+    Evaluator eval;
     Input in;
     
     //IN CHARACTER UNITS, NOT PIXELS.
@@ -29,7 +30,7 @@ class Console implements ComponentPTC {
     int currentX, currentY;
     int currentColor;
     
-    public Console(BGF fontSet, COL colorSet, ProcessII.Evaluator ev){
+    public Console(BGF fontSet, COL colorSet, Evaluator ev){
         eval = ev;
         font = fontSet;
         colors = colorSet;
@@ -276,7 +277,7 @@ class Console implements ComponentPTC {
      */
     @Override
     public Errors act(StringPTC command, ArrayList<ArrayList> arguments){
-        System.out.println("ACT CONSOLE: " + command.toString());
+        System.out.println("ACT CONSOLE: " + command.toString() + "ARGS:" + arguments.toString());
         switch (command.toString().toLowerCase()){
             case "print":
                 for (ArrayList argument : arguments) {
