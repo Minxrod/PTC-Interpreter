@@ -4,6 +4,9 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 /**
@@ -58,7 +61,9 @@ public class VirtualDevice implements ComponentPTC{
     public VirtualDevice(File file){
         //program time
         files = new Files();
-        program = new Program(files.initProgram(file));
+        
+        ArrayList items = files.initProgram(file);
+        program = new Program(items);
         
         //resources used by all componenets
         eval = new Evaluator();
@@ -67,6 +72,7 @@ public class VirtualDevice implements ComponentPTC{
         
         //create and initialize many components
         data = new Data(vars, eval);
+        data.setProgramData(items);
         
         input = new Input();
         
@@ -82,6 +88,11 @@ public class VirtualDevice implements ComponentPTC{
         graphics = new Graphic(r.getCOL2(), eval);
         
         sound = new Sound(eval);
+        
+        StringOperations.setEval(eval);
+        StringOperations.setVars(vars);
+        
+        setSysVars();
     }
     
     public void execute(){
@@ -93,6 +104,20 @@ public class VirtualDevice implements ComponentPTC{
     public void setInput(int buttons, int keyboard){
         input.setButton(buttons);
         input.setKSC(keyboard);
+    }
+    
+    /**
+     * Updates a variety of system variables. To be called once per frame.
+     */
+    public final void setSysVars(){
+        vars.setVariable(VariablesII.SYSTEM_VARIABLES[VariablesII.FREEMEM], new NumberPTC(1024));
+        
+        String date = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
+        vars.setVariable(VariablesII.SYSTEM_VARIABLES[VariablesII.DATE], new StringPTC(date));
+        
+        String time = LocalTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME);
+        vars.setVariable(VariablesII.SYSTEM_VARIABLES[VariablesII.TIME], new StringPTC(time));
+        
     }
     /**
      * Gets the image of the program at the current frame.
@@ -156,6 +181,10 @@ public class VirtualDevice implements ComponentPTC{
                 break;
             case GROUP_GRAPHICS:
                 graphics.act(command, args);
+                break;
+            case GROUP_STRING:
+                StringOperations.act(command, args);
+                break;
         }
         
         return null;
@@ -167,7 +196,6 @@ public class VirtualDevice implements ComponentPTC{
             case GROUP_CONSOLE:
                 return console.func(function, args);
             case GROUP_PROCESS:
-                //act(command, args);
                 break;
             case GROUP_BACKGROUND:
                 return bg.func(function, args);
@@ -260,6 +288,7 @@ public class VirtualDevice implements ComponentPTC{
             case "dim":
                 group = GROUP_VARIABLE;
                 break;
+            case "len":
             case "left$":
             case "right$":
             case "mid$":
@@ -269,6 +298,9 @@ public class VirtualDevice implements ComponentPTC{
             case "hex$":
             case "chr$":
             case "asc":
+                
+            case "tmread":
+            case "dtread":
                 group = GROUP_STRING;
                 break;
             case "gcls":
@@ -383,13 +415,13 @@ public class VirtualDevice implements ComponentPTC{
             while (location < items.size()){
                 VariablePTC item = items.get(location);
                 miniItems = new ArrayList();
-                if (item.getType() == StringPTC.STRING_OPERATOR && items.get(location-1).getType() != VariablePTC.STRING_FUNCTION){
+                if (item.getType() == StringPTC.STRING_OPERATOR && (location-1 < 0 || items.get(location-1).getType() != VariablePTC.STRING_FUNCTION)){
                     String op = item.toString();
                     //System.out.println("Paren?: " + op);
                     if (op.equals("(")){
                         int nest = 0;
                         location++; //move past opening parenthesis
-                        while (!op.equals(")") && nest <= 0){
+                        while (!op.equals(")") || nest >= 0){ //loop until a ) is hit with a nest of 0 or less
                             item = items.get(location);
                             op = item.toString();
                             items.remove(location);
@@ -399,9 +431,11 @@ public class VirtualDevice implements ComponentPTC{
                                 nest++;
                             if (op.equals(")")) //|| op.equals("]"))
                                 nest--;
+                            
+                            Debug.print(Debug.EVALUATOR_FLAG, "Mini: " + miniItems.toString() + "\nItems: " + items.toString());
                         }
                         //miniItems to be evaluated now. All items have been removed from original list.
-                        items.set(location--, (VariablePTC) evaluate(miniItems).get(0)); //replace opening paren with evaluated miniitems
+                        items.set(--location, (VariablePTC) eval(miniItems)); //replace opening paren with evaluated miniitems
                     } /*else if (op.equals("[")){
                         int nest = 0;
                         location++; //move past opening parenthesis

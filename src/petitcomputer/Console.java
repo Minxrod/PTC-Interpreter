@@ -43,6 +43,9 @@ class Console implements ComponentPTC {
         characters = new byte[CONSOLE_HEIGHT][CONSOLE_WIDTH];
         color = new byte[CONSOLE_HEIGHT][CONSOLE_WIDTH];
         
+        image = new BufferedImage(PetitComGUI.WINDOW_WIDTH, PetitComGUI.WINDOW_HEIGHT, BufferedImage.TYPE_BYTE_INDEXED, colors.getICM256());
+        g = image.createGraphics();
+        
         for (int y = 0; y < CONSOLE_HEIGHT; y++){
             for (int x = 0; x < CONSOLE_WIDTH; x++){
                 characters[y][x] = 0;

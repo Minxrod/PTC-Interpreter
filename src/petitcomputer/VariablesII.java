@@ -8,13 +8,56 @@ import petitcomputer.VirtualDevice.Evaluator;
  * @author minxr
  */
 public class VariablesII {
+    public static final int
+            FREEMEM = 2,
+            MAINCNTL = 11,
+            MAINCNTH = 12,
+            TIME = 28,
+            DATE = 29;
+    
+    public static final StringPTC SYSTEM_VARIABLES[] = new StringPTC[]{
+            new StringPTC("CSRX"),
+            new StringPTC("CSRX"),
+            new StringPTC("FREEMEM"), //2
+            new StringPTC("VERSION"),
+            new StringPTC("ERR"),
+            new StringPTC("ERL"),
+            new StringPTC("RESULT"),
+            new StringPTC("TCHX"),
+            new StringPTC("TCHY"),
+            new StringPTC("TCHST"),
+            new StringPTC("TCHTIME"),
+            new StringPTC("MAINCNTL"), //11
+            new StringPTC("MAINCNTH"), //12
+            new StringPTC("TABSTEP"),
+            new StringPTC("TRUE"),
+            new StringPTC("FALSE"),
+            new StringPTC("CANCEL"),
+            new StringPTC("ICONPUSE"),
+            new StringPTC("ICONPAGE"),
+            new StringPTC("ICONPMAX"),
+            new StringPTC("FUNCNO"),
+            new StringPTC("FREEVAR"),
+            new StringPTC("SYSBEEP"),
+            new StringPTC("KEYBOARD"),
+            new StringPTC("SPHITNO"),
+            new StringPTC("SPHITX"),
+            new StringPTC("SPHITY"),
+            new StringPTC("SPHITT"),
+            new StringPTC("TIME$"), //28
+            new StringPTC("DATE$"), //29
+            new StringPTC("MEM$"),
+            new StringPTC("PRGNAME$"),
+            new StringPTC("PACKAGE$")};
+    
     Evaluator eval;
     
     ArrayList<VariablePTC> vars;
     ArrayList<StringPTC> name;
     
     /**
-     * Initializes all of the relevant variable data and names. Default is an empty list of names and varables: one may want to add system variables to it first, to prevent name-stealing.
+     * Initializes all of the relevant variable data and names.
+     * System variables are added first, to prevent name-stealing.
      * @param ev
      */
     public VariablesII(Evaluator ev){
@@ -92,6 +135,12 @@ public class VariablesII {
         }
     }
     
+    /**
+     * Sets a variable with the given name ArrayList.
+     * Useful for arrays where the "name" might be an expression.
+     * @param name - name of variable to set
+     * @param data - the data to store to the variable
+     */
     public void setVariable(ArrayList<VariablePTC> name, VariablePTC data){
         if (name.size() == 1)
             setVariable((StringPTC) name.get(0), data);
@@ -241,8 +290,9 @@ public class VariablesII {
             {"package$", true, false},
         };
         
-        for (Object[] vardat : sysvars){
-            StringPTC varname = new StringPTC((String) vardat[0]);
+        for (int i = 0; i < sysvars.length; i++){//Object[] vardat : sysvars){
+            Object[] vardat = sysvars[i];
+            StringPTC varname = SYSTEM_VARIABLES[i];
             
             this.createVariable(varname);
             VariablePTC var = this.getVariable(varname);

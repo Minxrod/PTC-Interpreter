@@ -7,12 +7,35 @@ package petitcomputer;
 
 import java.util.ArrayList;
 import petitcomputer.CharacterPTC.Char;
+import petitcomputer.VirtualDevice.Evaluator;
 
 /**
  * The MathPTC equivalent for strings.
  * @author minxr
  */
 public class StringOperations {
+    public static Evaluator eval;
+    public static VariablesII vars;
+    
+    public static void setEval(Evaluator e){
+        eval = e;
+    }
+    public static void setVars(VariablesII v){
+        vars = v;
+    }
+    
+    public static void act(StringPTC command, ArrayList<ArrayList> args){
+        Debug.print(Debug.ACT_FLAG, "COMMAND branch STRING_OPS " + command + "ARGS: " + args);
+        switch (command.toString().toLowerCase()){
+            case "dtread":
+                StringPTC date = (StringPTC) eval.eval(args.get(0));
+                ArrayList var1 = args.get(1);
+                ArrayList var2 = args.get(2);
+                ArrayList var3 = args.get(3);
+                
+                dtread(date, var1, var2, var3);
+        }
+    }
     
     public static VariablePTC func(StringPTC function, ArrayList<VariablePTC> args) {
         Debug.print(Debug.ACT_FLAG, "FUNCTION branch STRING_OPS " + function + " ARGS: " + args);
@@ -50,9 +73,13 @@ public class StringOperations {
                 string = (StringPTC) args.get(0);
                 
                 return string.getNumberFromString();
+            case "len":
+                string = (StringPTC) args.get(0);
                 
+                return new NumberPTC(string.getLength());
+            default:
+                return null;
         }
-        return null;
     }
     
     /**
@@ -114,5 +141,24 @@ public class StringOperations {
      */
     public static NumberPTC asc(StringPTC s){
         return new NumberPTC(s.getCharacter(0));
+    }
+
+    /**
+     * Reads a date's components into multiple variables.
+     * @param date
+     * @param var1
+     * @param var2
+     * @param var3 
+     */
+    public static void dtread(StringPTC date, ArrayList var1, ArrayList var2, ArrayList var3) {
+        String c = date.toString();
+        
+        int y = Integer.parseInt(c.substring(0, 4));
+        int m = Integer.parseInt(c.substring(4, 6));
+        int d = Integer.parseInt(c.substring(6, 8));
+        
+        vars.setVariable(var1, new NumberPTC(y));
+        vars.setVariable(var2, new NumberPTC(m));
+        vars.setVariable(var3, new NumberPTC(d));
     }
 }

@@ -32,7 +32,7 @@ public class Program implements ComponentPTC {
     
     @Override
     public Errors act(StringPTC command, ArrayList<ArrayList> arguments){
-        Debug.print(Debug.ACT_FLAG, "ACT PROCESS: " + command.toString());
+        Debug.print(Debug.ACT_FLAG, "ACT CODE: " + command.toString());
         switch (command.toString().toLowerCase()){
             case "end":
                 //jump to program end :)
@@ -70,6 +70,8 @@ public class Program implements ComponentPTC {
             case "next":
                 code.next();
                 break;
+            default:
+                Debug.print(Debug.ACT_FLAG, "ERROR: " + command);
         }
         return null;
     }
@@ -146,14 +148,12 @@ public class Program implements ComponentPTC {
         }
         
         public Errors execute(){
-            VariablePTC command;
-            ArrayList<ArrayList> arguments;
-            ArrayList<VariablePTC> singleArg;
             error = null;
             
             while (location < items.size() && error == null){
-                error = step();
+                error = step(); //read commands, check for errors after each one
             }
+            
             return error;
         }
 
@@ -368,6 +368,7 @@ public class Program implements ComponentPTC {
 
             int endOfFor = getLocation(); //location is at the end of the FOR-TO[-STEP]. 
 
+            Debug.print(Debug.CODE_FLAG, "FOR LOOP INIT\n!!!!!!!!!!!!!!!!!!!!1\n" + expression.toString() + "\n" + condition.toString() + "\n" + steps.toString());
             while (((NumberPTC)eval.eval(condition)).getIntNumber() == 1){
                 setLocation(endOfFor);
                 Errors err = execute();
@@ -375,7 +376,7 @@ public class Program implements ComponentPTC {
                 if (err == Errors.NEXT_WITHOUT_FOR)
                     setError(null); //there's a FOR so it's actually fine.
 
-                Debug.print(Debug.PROCESS_FLAG, "FOR LOOP DEBUG\nXXXXXXXXXXXXXXXXXXXXx\n" + expression.toString() + "\n" + condition.toString() + "\n" + steps.toString());
+                Debug.print(Debug.CODE_FLAG, "FOR LOOP DEBUG\nXXXXXXXXXXXXXXXXXXXXx\n" + expression.toString() + "\n" + condition.toString() + "\n" + steps.toString());
                 step.setLocation(0); //reset increment
                 step.execute(); //lincrement the var
             }
@@ -385,7 +386,7 @@ public class Program implements ComponentPTC {
         }
 
         public void next(){
-            setError(Errors.NEXT_WITHOUT_FOR); //main has encountered a next
+            setError(Errors.NEXT_WITHOUT_FOR); //has encountered a next
         }
 
         /**
