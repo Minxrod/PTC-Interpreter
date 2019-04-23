@@ -35,8 +35,8 @@ public class Program implements ComponentPTC {
         Debug.print(Debug.ACT_FLAG, "ACT CODE: " + command.toString());
         switch (command.toString().toLowerCase()){
             case "end":
-                //jump to program end :)
-                code.setError(Errors.UNDEFINED_ERROR);
+                //end program.
+                code.setError(Errors.BREAK);
                 break;
             case "wait":
                 NumberPTC frames = (NumberPTC) eval.eval(arguments.get(0));
@@ -100,7 +100,6 @@ public class Program implements ComponentPTC {
             VariablePTC command;
             ArrayList<ArrayList> arguments;
             ArrayList<VariablePTC> singleArg;
-            error = null;
             
             VariablePTC item = items.get(location);
             Debug.print(Debug.CODE_FLAG, "Item# " + location + " = " + item.toString());
@@ -151,7 +150,7 @@ public class Program implements ComponentPTC {
             error = null;
             
             while (location < items.size() && error == null){
-                error = step(); //read commands, check for errors after each one
+                step(); //read commands, check for errors after each one
             }
             
             return error;
@@ -263,7 +262,7 @@ public class Program implements ComponentPTC {
          * @param args 
          */
         private void call(StringPTC command, ArrayList<ArrayList> args){
-            error = device.act(command, args);
+            device.act(command, args); //maintain old error unless it was null
         }
 
         public void setLocation(int newLocation){
@@ -371,9 +370,9 @@ public class Program implements ComponentPTC {
             Debug.print(Debug.CODE_FLAG, "FOR LOOP INIT\n!!!!!!!!!!!!!!!!!!!!1\n" + expression.toString() + "\n" + condition.toString() + "\n" + steps.toString());
             while (((NumberPTC)eval.eval(condition)).getIntNumber() == 1){
                 setLocation(endOfFor);
-                Errors err = execute();
+                execute();
                 //gets here after hitting "next"
-                if (err == Errors.NEXT_WITHOUT_FOR)
+                if (error == Errors.NEXT_WITHOUT_FOR)
                     setError(null); //there's a FOR so it's actually fine.
 
                 Debug.print(Debug.CODE_FLAG, "FOR LOOP DEBUG\nXXXXXXXXXXXXXXXXXXXXx\n" + expression.toString() + "\n" + condition.toString() + "\n" + steps.toString());
