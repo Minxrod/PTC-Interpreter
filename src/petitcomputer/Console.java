@@ -63,7 +63,7 @@ class Console implements ComponentPTC {
     }
     
     public void init(){
-        print(new StringPTC("PetitInterpreter ver0.2"));
+        print(new StringPTC("PetitInterpreter ver0.3"));
         
         print(new StringPTC("SMILEBASIC " + Runtime.getRuntime().freeMemory() + " bytes free"));
         print(new StringPTC("(C)2011-2012 SmileBoom Co.Ltd."));
