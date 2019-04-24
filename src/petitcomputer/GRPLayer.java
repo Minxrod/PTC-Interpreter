@@ -18,7 +18,9 @@ public class GRPLayer {
         gcolor = 0;
         grp = new BufferedImage(256, 192, BufferedImage.TYPE_BYTE_INDEXED, colors.getICM256());
         g = grp.createGraphics();
-        gcls();
+        
+        g.setColor(colors.getColor(gcolor));
+        g.fillRect(0, 0, 256, 192);
     }
     
     public void gcolor(int c){
@@ -30,12 +32,19 @@ public class GRPLayer {
         g.fillRect(0, 0, 256, 192);
     }
     
+    public void gcls(int c){
+        g.setColor(colors.getColor(c));
+        g.fillRect(0, 0, 256, 192);
+    }
+    
     public void gpset(int x, int y){
-        grp.setRGB(x, y, colors.getColor(gcolor).getRGB());
+        g.setColor(colors.getColor(gcolor));
+        g.drawLine(x, y, x, y);
     }
     
     public void gpset(int x, int y, int c){
-        grp.setRGB(x, y, colors.getColor(c).getRGB());
+        g.setColor(colors.getColor(c));
+        g.drawLine(x, y, x, y);
     }
     
     public void gline(int x, int y, int x2, int y2){

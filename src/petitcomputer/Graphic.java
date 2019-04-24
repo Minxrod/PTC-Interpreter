@@ -64,7 +64,12 @@ public class Graphic implements ComponentPTC {
                 }
                 break;
             case "gcls":
-                layer[drawLayer[gpage]].gcls();
+                if (args.isEmpty())
+                    layer[drawLayer[gpage]].gcls();
+                else{
+                    c = (NumberPTC) eval.eval(args.get(0));
+                    layer[drawLayer[gpage]].gcls(c.getIntNumber());
+                }
                 break;
             case "gcolor":
                 c = (NumberPTC) eval.eval(args.get(0));
