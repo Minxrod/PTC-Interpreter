@@ -61,6 +61,11 @@ public class Program implements ComponentPTC {
                 
                 code.go_to(label);
                 break;
+            case "gosub":
+                label = (StringPTC) eval.eval(arguments.get(0));
+                
+                code.gosub(label);
+                break;
             case "on":
                 code.on(arguments);
                 break;
@@ -69,6 +74,9 @@ public class Program implements ComponentPTC {
                 break;
             case "next":
                 code.next();
+                break;
+            case "return":
+                code.ret();
                 break;
             default:
                 Debug.print(Debug.ACT_FLAG, "ERROR: " + command);
@@ -462,7 +470,6 @@ public class Program implements ComponentPTC {
             Debug.print(Debug.PROCESS_FLAG, "Location found: " + labelLocation + "\nLabel search for: " + label + "\nLabel found: " + items.get(labelLocation).toString());
             //sets main location to that label
             setLocation(labelLocation);
-            //well shit, what if main isn't executing and instead it's a subobject like IF?
         }
 
         /**
@@ -486,15 +493,15 @@ public class Program implements ComponentPTC {
 
             int callLocation = getLocation(); //end of GOSUB command
 
-            setLocation(labelLocation);
-            Errors err = execute();
+            setLocation(labelLocation); //jump to the label
+            execute(); //run from label
 
-            if (err == Errors.RETURN_WITHOUT_GOSUB)
+            if (error == Errors.RETURN_WITHOUT_GOSUB){ //if returned intentionally, set location back to just after the GOSUB.
                 setLocation(callLocation); //RETURN lends to here
-            else
-                return err;
-
-            return null;
+                error = null; //Error is meant to appear, therefore can be discarded.
+            } 
+            
+            return error; //doesn't do anything, really.
         }
 
         /**

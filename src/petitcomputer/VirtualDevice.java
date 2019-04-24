@@ -237,11 +237,13 @@ public class VirtualDevice implements ComponentPTC{
             case "then":
             case "else":
             case "goto":
+            case "gosub":
             case "wait":
             case "end":
             case "on":
             case "for":
             case "next":
+            case "return":
                 group = GROUP_CODE;
                 break;
             case "bgput":
