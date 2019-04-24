@@ -12,21 +12,33 @@ Samples 1-5 are included, as well as some testing programs I created. Support fo
 Note: For text input, just type as you would on a normal keyboard. Not all keys are working (no shift) but alphanumeric keys should all work.
 
 Emulated-->DSi
+
 W        - Up
+
 A        - Left
+
 S        - Down
+
 D        - Right
 
 Up       - X
+
 Down     - B
+
 Left     - Y
+
 Right    - A
 
 Q        - L
+
 NUMPAD1  - R
+
 Space    - Start
+
 Escape   - Select
 
 Extra:
+
 Pg-Up    = Set double zoom
+
 Pg-Down  = Set original zoom
