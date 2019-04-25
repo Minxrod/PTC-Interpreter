@@ -105,6 +105,42 @@ public class MathPTC {
             return new NumberPTC(0);
     }
     
+    /**
+     * Calculates the bitwise OR of the integer part of two given numbers.
+     * @param a
+     * @param b
+     * @return a OR b
+     */
+    public static NumberPTC or(NumberPTC a, NumberPTC b){
+        int a_or_b = a.getIntNumber() | b.getIntNumber();
+        
+        return new NumberPTC(a_or_b);
+    }
+    
+    /**
+     * Calculates the bitwise AND of the integer part of two given numbers.
+     * @param a
+     * @param b
+     * @return a AND b
+     */
+    public static NumberPTC and(NumberPTC a, NumberPTC b){
+        int a_and_b = a.getIntNumber() & b.getIntNumber();
+        
+        return new NumberPTC(a_and_b);
+    }
+    
+    /**
+     * Calculates the bitwise XOR of the integer part of two given numbers.
+     * @param a
+     * @param b
+     * @return a XOR b
+     */
+    public static NumberPTC xor(NumberPTC a, NumberPTC b){
+        int a_xor_b = a.getIntNumber() ^ b.getIntNumber();
+        
+        return new NumberPTC(a_xor_b);
+    }
+    
     /*==================================
     = BEGIN FUNCTIONS || END OPERATORS =
     ==================================*/

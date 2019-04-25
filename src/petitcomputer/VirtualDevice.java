@@ -117,7 +117,6 @@ public class VirtualDevice implements ComponentPTC{
         
         String time = LocalTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME);
         vars.setVariable(VariablesII.SYSTEM_VARIABLES[VariablesII.TIME], new StringPTC(time));
-        
     }
     /**
      * Gets the image of the program at the current frame.
@@ -354,7 +353,9 @@ public class VirtualDevice implements ComponentPTC{
             toEvaluate = evaluatePM(toEvaluate);
             Debug.print(Debug.EVALUATOR_FLAG, "evaluate pm:" + toEvaluate.toString());
             toEvaluate = evaluateCompare(toEvaluate);
-            //ADD: logical ops
+            Debug.print(Debug.EVALUATOR_FLAG, "evaluate compare:" + toEvaluate);
+            toEvaluate = evaluateLogical(toEvaluate);
+            Debug.print(Debug.EVALUATOR_FLAG, "Evaluate logic:" + toEvaluate);
 
             Debug.print(Debug.EVALUATOR_FLAG, "Evaluate final: " + toEvaluate);
             return toEvaluate;
@@ -716,6 +717,41 @@ public class VirtualDevice implements ComponentPTC{
                                 lteq = 0;
 
                             items.set(location, new NumberPTC(lteq));
+                            items.remove(location-1);
+                            items.remove(location);
+                            break;
+                        default:
+                            location++;
+                            break;
+                    }
+                } else
+                    location++;
+            }       
+
+            return items;
+        }
+        
+        private ArrayList evaluateLogical(ArrayList<VariablePTC> items){
+            int location = 0;
+
+            while (location < items.size()){
+                VariablePTC item = items.get(location);
+                if (item.getType() == StringPTC.STRING_OPERATOR){
+                    String op = item.toString();
+                    //System.out.println("AS?" + op);
+                    switch (op.toLowerCase()) {
+                        case "or":
+                            items.set(location, MathPTC.or((NumberPTC)items.get(location-1), (NumberPTC)items.get(location+1)));
+                            items.remove(location-1);
+                            items.remove(location); //they have been C O N S U M E
+                            break;
+                        case "and":
+                            items.set(location, MathPTC.and((NumberPTC)items.get(location-1), (NumberPTC)items.get(location+1)));
+                            items.remove(location-1);
+                            items.remove(location);
+                            break;
+                        case "xor":
+                            items.set(location, MathPTC.xor((NumberPTC)items.get(location-1), (NumberPTC)items.get(location+1)));
                             items.remove(location-1);
                             items.remove(location);
                             break;

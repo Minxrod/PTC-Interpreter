@@ -13,7 +13,9 @@ public class VariablesII {
             MAINCNTL = 11,
             MAINCNTH = 12,
             TIME = 28,
-            DATE = 29;
+            DATE = 29,
+            TRUE = 33,
+            FALSE = 34;
     
     public static final StringPTC SYSTEM_VARIABLES[] = new StringPTC[]{
             new StringPTC("CSRX"),
@@ -48,7 +50,9 @@ public class VariablesII {
             new StringPTC("DATE$"), //29
             new StringPTC("MEM$"),
             new StringPTC("PRGNAME$"),
-            new StringPTC("PACKAGE$")};
+            new StringPTC("PACKAGE$"),
+            new StringPTC("TRUE"),
+            new StringPTC("FALSE")};
     
     Evaluator eval;
     
@@ -288,6 +292,8 @@ public class VariablesII {
             {"mem$",     true, true},
             {"prgname$", true, false},
             {"package$", true, false},
+            {"TRUE", true, false},
+            {"FALSE", true, false}
         };
         
         for (int i = 0; i < sysvars.length; i++){//Object[] vardat : sysvars){
@@ -300,6 +306,8 @@ public class VariablesII {
             var.setWriteable((boolean) vardat[2]); //this one actually matters. Attempting to set a var should throw an error....
         }
         
+        this.setVariable(SYSTEM_VARIABLES[TRUE], new NumberPTC(1));
+        //false will default to 0 anyways.
     }
     
     public void act(StringPTC command, ArrayList<ArrayList> args){
