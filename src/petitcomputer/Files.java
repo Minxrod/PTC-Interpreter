@@ -6,12 +6,23 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import static petitcomputer.COL.convertFromPTCFormat;
 
 /**
  * File handler class. Does the initial file loading, as well as loads from within interpreted programs.
  * @author minxr
  */
 public class Files {
+    public static final int HEADER_SIZE = 48;
+    
+    public static final int CHRBANK_SIZE = 256;
+    public static final int CHR_SIZE = 32; //bytes
+    public static final int COLOR_SIZE = 256;
+    public static final int GRP_SIZE = 256*192; //width*height
+    public static final int SCR_SIZE = 0; //SCR files are odd and I don't understand them
+    
     String directory;
        
     public void load(StringPTC name){
@@ -25,9 +36,9 @@ public class Files {
             System.err.println("Your file does not exist...");
             return null;
         }
-        directory = file.getAbsoluteFile().getParent();
+        directory = file.getAbsoluteFile().getParent() + "/";
         
-        System.out.println(directory + file.getName());
+        //System.out.println(directory + file.getName());
         return readProgram(loadProgram(file.getName()));
     }
     
@@ -39,7 +50,7 @@ public class Files {
     public byte[] loadProgram(String filename){
         byte[] program;
         try {
-            File programFile = new File(directory + "/" + filename);
+            File programFile = new File(directory + filename);
             if (!programFile.exists()){
                 System.err.println("Oh, file does not exist.");
                 return null;
@@ -153,7 +164,17 @@ public class Files {
                         item.add(character);
                         item.setType(VariablePTC.STRING_OPERATOR);
                         items.add(item);
-                        position++;                                    
+                        position++;              
+                    } else if (CharacterPTC.isDash(character)) {
+                        item.add(character);
+                        item.setType(VariablePTC.STRING_OPERATOR);
+                        items.add(item);
+                        position++;
+                    } else if (CharacterPTC.Char.QUESTION.getIndex() == character){ //replace question mark with PRINT
+                        item = new StringPTC("PRINT");
+                        item.setType(VariablePTC.STRING_COMMAND);
+                        items.add(item);
+                        position++;
                     } else {
                         do {
                             //add char
@@ -162,7 +183,8 @@ public class Files {
                             //get next char
                             position++;
                             character = program[position];
-                        } while (CharacterPTC.isSymbol(character) && character != CharacterPTC.QUOTE);
+                        } while (CharacterPTC.isSymbol(character) && character != CharacterPTC.OPEN_PARENTHESIS && character != CharacterPTC.QUOTE && character != CharacterPTC.DASH);
+                        //exceptions to == good =( bad
                         item.setType(VariablePTC.STRING_OPERATOR);
                         items.add(item);
                     }
@@ -180,6 +202,65 @@ public class Files {
             System.err.println(e.getMessage() + Arrays.toString(e.getStackTrace()));
         }
         return items;
+    }
+    
+    public short[][] loadColor(String filename){
+        File defaultColorFile = new File(filename);
+        FileInputStream in = null;
+        try {
+            in = new FileInputStream(defaultColorFile);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(BGF.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if (!defaultColorFile.exists())
+            System.err.println("Oh fricc you messed up...");
+        
+        byte[] header = new byte[48];
+        //for (int i = 0; i < 48; i++){
+        try {
+            //System.out.println(i);
+            in.read(header);
+        } catch (IOException ex) {
+            Logger.getLogger(BGF.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        short[][] tempBytes = new short[16][16];
+        int tempCol;
+        for (int i = 0; i < COLOR_SIZE; i++){
+            try {
+                //tempBytes = new byte[2];
+                tempCol = (short) ((in.read() << 8) | in.read());
+                tempBytes[i / 16][i % 16] = convertFromPTCFormat((short) tempCol);
+            } catch (IOException ex) {
+                Logger.getLogger(COL.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }        
+        return tempBytes;
+    }
+    
+    public byte[] loadCHRBank(String filename){
+        try {
+            File file = new File(filename);
+            if (!file.exists())
+                System.err.println("ERROR: " + file.getName() + " not found.");
+            
+            FileInputStream in;
+            in = new FileInputStream(file);
+            byte[] header = new byte[HEADER_SIZE];
+            in.read(header);
+            
+            byte[] tempBytes = new byte[CHRBANK_SIZE * 32];
+            in.read(tempBytes);
+
+            for (int j = 0; j < tempBytes.length; j++)
+                tempBytes[j] = (byte) (((tempBytes[j] & 0x0F) << 4) | ((tempBytes[j] & 0xF0) >> 4)); //swap order of nibbles
+
+            return tempBytes;
+            
+        } catch (FileNotFoundException ex) {
+        } catch (IOException ex) {
+        }
+        return null;
     }
     
     /**
