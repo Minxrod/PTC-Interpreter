@@ -221,9 +221,9 @@ public class VariablesII {
                 ArrayPTC arr2 = (ArrayPTC) arr.getElement(i);
                 for (int j = 0; j < arr2.getLength(); j++)
                     if (arrayName.toString().contains("$"))
-                        arr2.setElement(i, new StringPTC(""));
+                        arr2.setElement(j, new StringPTC(""));
                     else 
-                        arr2.setElement(i, new NumberPTC(0));
+                        arr2.setElement(j, new NumberPTC(0));
             } else {
                 if (arrayName.toString().contains("$"))
                     arr.setElement(i, new StringPTC(""));
