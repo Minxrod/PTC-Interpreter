@@ -118,7 +118,12 @@ public class Input implements ComponentPTC{
 
     @Override
     public Errors act(StringPTC command, ArrayList<ArrayList> args) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        switch (command.toString().toLowerCase()){
+            case "brepeat":
+                ; //not yet...
+                break;
+        }
+        return null;
     }
 
     @Override
