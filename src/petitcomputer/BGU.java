@@ -1,6 +1,7 @@
 package petitcomputer;
 
 import java.awt.Image;
+import java.util.Arrays;
 
 /**
  * Class that contains data for BGU characters.
@@ -43,9 +44,18 @@ public class BGU implements CharsetPTC {
      */
     @Override
     public void setDefault(){
-        bgu[0].loadFromFile("src/resource/BGU0.PTC");
-        bgu[1].loadFromFile("src/resource/BGU1.PTC");
-        bgu[2].loadFromFile("src/resource/BGU0.PTC");
-        bgu[3].loadFromFile("src/resource/BGU1.PTC");        
+        //bgu[0].loadFromFile("src/resource/BGU0.PTC");
+        //bgu[1].loadFromFile("src/resource/BGU1.PTC");
+        //bgu[2].loadFromFile("src/resource/BGU0.PTC");
+        //bgu[3].loadFromFile("src/resource/BGU1.PTC");        
+    }
+    
+    /**
+     * Sets the graphic data for the given bank.
+     * @param bank character bank index
+     * @param data byte array of data
+     */
+    public void setData(int bank, byte[] data){
+        bgu[bank].setBankData(data);
     }
 }
