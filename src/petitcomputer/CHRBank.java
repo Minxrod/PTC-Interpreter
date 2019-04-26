@@ -26,7 +26,7 @@ public class CHRBank {
             characters[i] = new CHR();
     }
     
-    public void loadFromFile(String filename){
+    /*public void loadFromFile(String filename){
         try {
             File file = new File(filename);
             if (!file.exists())
@@ -51,6 +51,21 @@ public class CHRBank {
             Logger.getLogger(BGF.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(BGF.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }*/
+    
+    /**
+     * Sets the data for an entire bank of characters.
+     * The data is assumed to have been loaded from a file.
+     * @param data - byte array of character data 
+     */
+    public void setBankData(byte[] data){
+        for (int i = 0; i < size; i++){
+            byte[] tempBytes = new byte[32];
+            
+            System.arraycopy(data, tempBytes.length * i, tempBytes, 0, tempBytes.length);
+            
+            characters[i].setData(tempBytes);
         }
     }
     
