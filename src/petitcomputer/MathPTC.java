@@ -336,6 +336,9 @@ public class MathPTC {
                 return rnd(value);
             case "pi":
                 return new NumberPTC((double)12867.0/4096.0);
+            case "floor":
+                value = (NumberPTC) args.get(0);
+                return floor(value);
             default: 
                 return null;
         }
