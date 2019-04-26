@@ -1,6 +1,7 @@
 package petitcomputer;
 
 import java.awt.Image;
+import java.util.Arrays;
 
 /**
  * Limited use BGD class - essentially a panel-exclusive character set...
@@ -43,7 +44,16 @@ public class BGD implements CharsetPTC{
      */
     @Override
     public void setDefault(){
-        bgd[0].loadFromFile("src/resource/BGD0.PTC"); //UPDATE LATER!!!
-        bgd[1].loadFromFile("src/resource/BGD1.PTC");
+        //bgd[0].loadFromFile("src/resource/BGD0.PTC"); //UPDATE LATER!!!
+        //bgd[1].loadFromFile("src/resource/BGD1.PTC");
+    }
+    
+    /**
+     * Sets the data of the character bank.
+     * @param bank
+     * @param data 
+     */
+    public void setData(int bank, byte[] data){
+        bgd[bank].setBankData(data);
     }
 }
