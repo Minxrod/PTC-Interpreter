@@ -43,9 +43,13 @@ public class BGF implements CharsetPTC{
      */
     @Override
     public void setDefault(){
-        characters.loadFromFile("src/resource/BGF0.PTC");
+        //characters.loadFromFile("src/resource/BGF0.PTC");
     }
 
+    public void setData(byte[] data){
+        characters.setBankData(data);
+    }
+    
     /**
      * No longer supported method to create the character image and return the newly created image. Was very inefficient as it would recreate the same image on most calls.
      * @param index
