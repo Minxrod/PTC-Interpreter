@@ -191,6 +191,8 @@ public class Program implements ComponentPTC {
 
                     location++;
                     item = items.get(location);
+                    Debug.print(Debug.CODE_FLAG, "RA: Item# " + location + " = " + item.toString());
+
                     if (item.toString().equals("(") || item.toString().equals("["))
                         nest++;
                     if (item.toString().equals(")") || item.toString().equals("]"))
@@ -228,6 +230,8 @@ public class Program implements ComponentPTC {
                     break;
                 
                 item = items.get(location);
+                Debug.print(Debug.CODE_FLAG, "variable: Item# " + location + " = " + item.toString());
+
                 //System.out.println("AC untilMatch: " + location + item.toString() + item.getType());
             }
             //System.out.println("final obj was" + item.toString() + item.equals(toMatch));
@@ -258,6 +262,8 @@ public class Program implements ComponentPTC {
                     break;
                     
                 item = items.get(location);
+                Debug.print(Debug.CODE_FLAG, "type: Item# " + location + " = " + item.toString());
+
                 //System.out.println("AC untilType: " + item.toString() + item.getType());
             }
 
@@ -550,9 +556,9 @@ public class Program implements ComponentPTC {
                 i++;//next element
             } while (i < arguments.size());            
 
-            Debug.print(Debug.PROCESS_FLAG, Arrays.toString(expression.toArray()));
-            Debug.print(Debug.PROCESS_FLAG, Arrays.toString(thenCode.toArray()));
-            Debug.print(Debug.PROCESS_FLAG, Arrays.toString(elseCode.toArray()));
+            Debug.print(Debug.PROCESS_FLAG, expression.toString());
+            Debug.print(Debug.PROCESS_FLAG, thenCode.toString());
+            Debug.print(Debug.PROCESS_FLAG, elseCode.toString());
 
             NumberPTC result = (NumberPTC) eval.eval(expression); //condition of IF: true or false? (really, 0 or !0)
 
