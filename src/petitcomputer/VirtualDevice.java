@@ -52,6 +52,7 @@ public class VirtualDevice implements ComponentPTC{
     Panel panel;
     Sound sound;
     Graphic graphics;
+    Sprites sprites;
     
     /**
      * Constructs a new VirtualDevice with all necessary components for a program run.
@@ -67,7 +68,7 @@ public class VirtualDevice implements ComponentPTC{
         
         //resources used by all componenets
         eval = new Evaluator();
-        r = new Resources();
+        r = new Resources(files);
         vars = new VariablesII(eval);
         
         //create and initialize many components
@@ -88,6 +89,8 @@ public class VirtualDevice implements ComponentPTC{
         graphics = new Graphic(r.getCOL2(), eval);
         
         sound = new Sound(eval);
+        
+        //sprites = new Sprites(r.getSPU(), r.getCOL1(), eval);
         
         StringOperations.setEval(eval);
         StringOperations.setVars(vars);
@@ -314,6 +317,26 @@ public class VirtualDevice implements ComponentPTC{
             case "gspoit":
                 group = GROUP_GRAPHICS;
                 break;
+            case "spset":
+            case "spofs":
+            case "sppage":
+            case "spclr":
+            case "sphome":
+            case "spchr":
+            case "spanim":
+            case "spangle":
+            case "spscale":
+            case "spchk":
+            case "spread":
+            case "spsetv":
+            case "spgetv":
+            case "spcol":
+            case "spcolvec":
+            case "sphit":
+            case "sphitsp":
+            case "sphitrc":
+                group = GROUP_SPRITE;
+                break;
             default:
                 group = GROUP_UNDEFINED;
                 break;
@@ -333,6 +356,11 @@ public class VirtualDevice implements ComponentPTC{
      * @author minxr
      */    
     public class Evaluator {
+        /**
+         * Evaluates an expression and returns the first value of the evaluated items.
+         * @param items
+         * @return 
+         */
         public VariablePTC eval(ArrayList items){
             return evaluate(items).get(0);
         }
@@ -394,6 +422,7 @@ public class VirtualDevice implements ComponentPTC{
 
                             i++;
                         } //name has been obtained
+                        i--; //move back to closing paren so that it can advance back later
                         Debug.print(Debug.EVALUATOR_FLAG, name.toString());
                         newItems.add(vars.getVariable(name));
 
@@ -438,7 +467,8 @@ public class VirtualDevice implements ComponentPTC{
                             Debug.print(Debug.EVALUATOR_FLAG, "Mini: " + miniItems.toString() + "\nItems: " + items.toString());
                         }
                         //miniItems to be evaluated now. All items have been removed from original list.
-                        items.set(--location, (VariablePTC) eval(miniItems)); //replace opening paren with evaluated miniitems
+                        location--;
+                        items.set(location, eval(miniItems)); //replace opening paren with evaluated miniitems
                     } /*else if (op.equals("[")){
                         int nest = 0;
                         location++; //move past opening parenthesis
@@ -483,7 +513,7 @@ public class VirtualDevice implements ComponentPTC{
                             items.remove(location+1); //C  O  N  S  U  M  E
                             break;
                         case "-":
-                            if (items.get(location-1).getType() != VariablePTC.NUMBER_LITERAL){
+                            if (location-1<0 || items.get(location-1).getType() != VariablePTC.NUMBER_LITERAL){
                                 items.set(location, MathPTC.negate((NumberPTC)items.get(location+1)));
                                 items.remove(location+1); //all will be E M U S N O C;-;-;-;
                             } else
