@@ -47,6 +47,15 @@ public class COL {
         return c;
     }
     
+    /**
+     * Sets the color data all at once.
+     * Intended to be used when loading data from a file.
+     * @param data 
+     */
+    public void setData(short[][] data){
+       colors = data; 
+    }
+    
     public void setDefault(String filename){
         File defaultColorFile = new File(filename);
         FileInputStream in = null;
