@@ -60,6 +60,8 @@ public class VirtualDevice implements ComponentPTC{
      * @param file - program file to load
      */
     public VirtualDevice(File file){
+        //The evaluator object necessray for pretty much everything
+        eval = new Evaluator();
         //program time
         files = new Files();
         
@@ -67,8 +69,7 @@ public class VirtualDevice implements ComponentPTC{
         program = new Program(items);
         
         //resources used by all componenets
-        eval = new Evaluator();
-        r = new Resources(files);
+        r = new Resources(files, eval);
         vars = new VariablesII(eval);
         
         //create and initialize many components
@@ -186,6 +187,9 @@ public class VirtualDevice implements ComponentPTC{
                 break;
             case GROUP_STRING:
                 StringOperations.act(command, args);
+                break;
+            case GROUP_FILE:
+                r.act(command, args);
                 break;
         }
         
@@ -336,6 +340,10 @@ public class VirtualDevice implements ComponentPTC{
             case "sphitsp":
             case "sphitrc":
                 group = GROUP_SPRITE;
+                break;
+            case "load":
+            case "save":
+                group = GROUP_FILE;
                 break;
             default:
                 group = GROUP_UNDEFINED;

@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static petitcomputer.COL.convertFromPTCFormat;
+import petitcomputer.VirtualDevice.Evaluator;
 
 /**
  * File handler class. Does the initial file loading, as well as loads from within interpreted programs.
@@ -22,9 +23,12 @@ public class Files {
     public static final int COLOR_SIZE = 256;
     public static final int GRP_SIZE = 256*192; //width*height
     public static final int SCR_SIZE = 0; //SCR files are odd and I don't understand them
-    
+        
     String directory;
        
+    public Files(){
+    }
+    
     public void load(StringPTC name){
         String fileName = name.toString();
         
@@ -175,6 +179,11 @@ public class Files {
                         item.setType(VariablePTC.STRING_COMMAND);
                         items.add(item);
                         position++;
+                    } else if (CharacterPTC.Char.SEMICOLON.getIndex() == character) {
+                        item.add(character);
+                        item.setType(VariablePTC.STRING_OPERATOR);
+                        items.add(item);
+                        position++;
                     } else {
                         do {
                             //add char
@@ -238,7 +247,9 @@ public class Files {
         return tempBytes;
     }
     
-    public byte[] loadCHRBank(String filename){
+    public byte[] loadCHRBank(String filename, boolean fullPath){
+        if (!fullPath) //If the full path isn't supplied use the default directory.
+            filename = directory + filename;
         try {
             File file = new File(filename);
             if (!file.exists())

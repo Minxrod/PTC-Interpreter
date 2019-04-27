@@ -1,14 +1,27 @@
 package petitcomputer;
 
-class Resources {
+import java.util.ArrayList;
+import petitcomputer.VirtualDevice.Evaluator;
+
+/**
+ * Class to store all sorts of program graphics resources.
+ * @author minxr
+ */
+public class Resources implements ComponentPTC {
     public static final String PATH = "src/resource/";
+    
+    Files files;
+    Evaluator eval;
     
     BGF bgfu, bgfl;
     BGU bguu, bgul;
     BGD bgd; //only use is on bottom screen
     COL col0, col1, col2; //BG+FONT, SP, GRP
     
-    public Resources(Files f){
+    public Resources(Files f, Evaluator e){
+        files = f;
+        eval = e;
+        
         col0 = new COL(false);
         col0.setData(f.loadColor(PATH + "COL0.PTC"));
         //col0.setDefault("src/resource/COL0.PTC");
@@ -24,24 +37,24 @@ class Resources {
         col2.createICM();
         
         bgfu = new BGF(col0);
-        bgfu.setData(f.loadCHRBank(PATH + "BGF0.PTC"));
+        bgfu.setData(f.loadCHRBank(PATH + "BGF0.PTC", true));
         //bgfu.setDefault();
         
         bgfl = new BGF(col0);
-        bgfl.setData(f.loadCHRBank(PATH + "BGF0.PTC"));
+        bgfl.setData(f.loadCHRBank(PATH + "BGF0.PTC", true));
         //bgfl.setDefault();
         
         bguu = new BGU(col0);
         
-        bguu.setData(0, f.loadCHRBank(PATH + "BGU0.PTC"));
-        bguu.setData(1, f.loadCHRBank(PATH + "BGU1.PTC"));
-        bguu.setData(2, f.loadCHRBank(PATH + "BGU2.PTC"));
-        bguu.setData(3, f.loadCHRBank(PATH + "BGU3.PTC"));
+        bguu.setData(0, f.loadCHRBank(PATH + "BGU0.PTC", true));
+        bguu.setData(1, f.loadCHRBank(PATH + "BGU1.PTC", true));
+        bguu.setData(2, f.loadCHRBank(PATH + "BGU2.PTC", true));
+        bguu.setData(3, f.loadCHRBank(PATH + "BGU3.PTC", true));
         //bguu.setDefault();
         
         bgd = new BGD(col0);
-        bgd.setData(0, f.loadCHRBank(PATH + "BGD0.PTC"));
-        bgd.setData(1, f.loadCHRBank(PATH + "BGD1.PTC"));
+        bgd.setData(0, f.loadCHRBank(PATH + "BGD0.PTC", true));
+        bgd.setData(1, f.loadCHRBank(PATH + "BGD1.PTC", true));
         //bgd.setDefault();
     }
     
@@ -102,5 +115,54 @@ class Resources {
      */
     private boolean isLower(String s){
         return s.substring(3).contains("l");
+    }
+    
+    /**
+     * Loads data using a files object and stores it to the correct object.
+     * @param type
+     * @param name 
+     */
+    public void load(String type, String name){
+        type = type.toLowerCase();
+        name = name.toUpperCase();
+        
+        switch (type.substring(0, 3)){
+            case "prg":
+                //PROGRAM OBJECT LOAD
+                break;
+            case "bgf":
+                if (type.endsWith("l")){
+                    bgfl.setData(files.loadCHRBank(name + ".PTC", false));
+                } else {
+                    bgfu.setData(files.loadCHRBank(name + ".PTC", false));
+                }
+                break;
+        }
+    }
+    
+    @Override
+    public Errors act(StringPTC command, ArrayList<ArrayList> args) {
+        switch (command.toString().toLowerCase()){
+            case "load":
+                String resource = ((StringPTC) eval.eval(args.get(0))).toString();
+                String type;
+                String name;
+                if (resource.contains(":")){
+                    type = resource.substring(0, resource.indexOf(":")); //TYPE:FILENAME -> TYPE
+                    name = resource.substring(resource.indexOf(":")+1, resource.length()); // TYPE:FILENAME -> FILENAME
+                } else {
+                    type = "prg";
+                    name = resource;
+                }
+                //type and name are set. Now load using given type + name
+                load(type, name);
+                break;
+        }
+        return null;
+    }
+
+    @Override
+    public VariablePTC func(StringPTC function, ArrayList<VariablePTC> args) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

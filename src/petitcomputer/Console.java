@@ -4,10 +4,6 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
-import java.awt.image.Raster;
 import java.util.Arrays;
 import petitcomputer.CharacterPTC.Char;
 import petitcomputer.VirtualDevice.Evaluator;
@@ -182,8 +178,11 @@ class Console implements ComponentPTC {
         for (int i = 0; i < text.getLength(); i++){
             characters[currentY][currentX] = text.getCharacter(i);
             color[currentY][currentX] = (byte) currentColor;
-            g.drawImage(font.getImage(Byte.toUnsignedInt(text.getCharacter(i)), (byte) currentColor), currentX * 8, currentY * 8, null);
-            advanceCursor();
+            //g.drawImage(font.getImage(Byte.toUnsignedInt(text.getCharacter(i)), (byte) currentColor), currentX * 8, currentY * 8, null);
+            if ((currentX == CONSOLE_WIDTH - 1 && currentY == CONSOLE_HEIGHT - 1 && i == text.getLength() - 1 && !text.getLine()))
+                ; //don't advance cursor if a semicolon was encountered at the end AND you are at the edge of the console already.
+            else
+                advanceCursor();
         }
         if (text.getTab())
             do 

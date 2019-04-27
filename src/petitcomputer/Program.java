@@ -180,7 +180,7 @@ public class Program implements ComponentPTC {
             VariablePTC item = items.get(location);
             //if instant newline, no args, else read args
             //searcharg loop
-            while (item.getType() != VariablePTC.LINE_SEPARATOR){
+            while (location < items.size() && item.getType() != VariablePTC.LINE_SEPARATOR){
                 item = items.get(location);
                 singleArg = new ArrayList();
                 //System.out.println("A: " + item.toString());
@@ -190,6 +190,9 @@ public class Program implements ComponentPTC {
                     singleArg.add(item);
 
                     location++;
+                    if (location >= items.size())
+                        break;
+                    
                     item = items.get(location);
                     Debug.print(Debug.CODE_FLAG, "RA: Item# " + location + " = " + item.toString());
 
@@ -451,10 +454,12 @@ public class Program implements ComponentPTC {
             //evaluate expression a
             NumberPTC result = (NumberPTC) eval.eval(expression);
 
-            if (!isGosub)
-                go_to((StringPTC) labels.get(result.getIntNumber()));
-            else
-                gosub((StringPTC) labels.get(result.getIntNumber()));
+            if (result.getIntNumber() < labels.size()){
+                if (!isGosub)
+                    go_to((StringPTC) labels.get(result.getIntNumber()));
+                else
+                    gosub((StringPTC) labels.get(result.getIntNumber()));
+            }
         }
 
         /**
