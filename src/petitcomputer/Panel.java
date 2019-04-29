@@ -24,18 +24,13 @@ public class Panel implements ComponentPTC {
         
         drawBGD();
         
-        //console.cls();
-        //console.print(new StringPTC("debug text"));
-        /*for (int x = 0; x < 32; x++)
-            for (int y = 0; y < 16; y++)
-                back.bgput(x, y, x + 32 * y);*/
-        
         pnltype = new StringPTC("kya");
     }
     
     public void pnlstr(StringPTC text, NumberPTC x, NumberPTC y, NumberPTC col){
         console.locate(x, y);
         console.color(col);
+        text.setLine(false);
         console.print(text);
     }    
     
