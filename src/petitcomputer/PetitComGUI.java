@@ -91,12 +91,14 @@ public class PetitComGUI implements Runnable {
         
         total.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0), "ZOOM OUT");
         total.getActionMap().put("ZOOM OUT", new ZoomAction(1));
+        total.setBackground(Color.BLACK);
         
         frame.add(total);
         frame.pack();
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setAlwaysOnTop(true); //useful for testing
+        frame.setBackground(Color.BLACK);
         
         //upon creation of the GUI, ensure Process is ready to run in it's own thread, able to launch a program if necessary.
         processor = new Process(file);
@@ -287,6 +289,7 @@ public class PetitComGUI implements Runnable {
         public NPanel(String newName) {
             panelName = newName;
             scale = 1;
+            //this.setBackground(Color.BLACK);
         }
         
         public void setScale(int zFactor){
@@ -301,7 +304,7 @@ public class PetitComGUI implements Runnable {
         @Override
         public void paintComponent(Graphics g){
             //draw crap
-            g.drawImage(processor.getImage(panelName), 0, 0, scale * WINDOW_WIDTH,scale * WINDOW_HEIGHT, null);
+            g.drawImage(processor.getImage(panelName), 0, 0, scale * WINDOW_WIDTH, scale * WINDOW_HEIGHT, null);
         }
     }
 }

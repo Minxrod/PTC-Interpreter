@@ -24,8 +24,8 @@ class Console implements ComponentPTC {
     BGF font;
     COL colors;
     
-    BufferedImage image;
-    Graphics g;
+    //BufferedImage image;
+    //Graphics g;
     byte[][] characters;
     byte[][] color;
     int currentX, currentY;
@@ -39,8 +39,8 @@ class Console implements ComponentPTC {
         characters = new byte[CONSOLE_HEIGHT][CONSOLE_WIDTH];
         color = new byte[CONSOLE_HEIGHT][CONSOLE_WIDTH];
         
-        image = new BufferedImage(PetitComGUI.WINDOW_WIDTH, PetitComGUI.WINDOW_HEIGHT, BufferedImage.TYPE_BYTE_INDEXED, colors.getICM256());
-        g = image.createGraphics();
+        //image = new BufferedImage(PetitComGUI.WINDOW_WIDTH, PetitComGUI.WINDOW_HEIGHT, BufferedImage.TYPE_BYTE_INDEXED, colors.getICM256());
+        //g = image.createGraphics();
         
         for (int y = 0; y < CONSOLE_HEIGHT; y++){
             for (int x = 0; x < CONSOLE_WIDTH; x++){
@@ -261,10 +261,11 @@ class Console implements ComponentPTC {
     
         currentX = 0;
         currentY = 0;
+        currentColor = 0;
         
-        //creates (or recreates) an image for the console to draw to.
-        image = new BufferedImage(PetitComGUI.WINDOW_WIDTH, PetitComGUI.WINDOW_HEIGHT, BufferedImage.TYPE_BYTE_INDEXED, colors.getICM256());
-        g = image.createGraphics();
+        //OLD://creates (or recreates) an image for the console to draw to.
+        //image = new BufferedImage(PetitComGUI.WINDOW_WIDTH, PetitComGUI.WINDOW_HEIGHT, BufferedImage.TYPE_BYTE_INDEXED, colors.getICM256());
+        //g = image.createGraphics();
     }
     
     public void setVariables(VariablesII v){
@@ -335,7 +336,7 @@ class Console implements ComponentPTC {
      * Creates a visual image of the console.
      */
     public Image createImage(){
-        image = new BufferedImage(CONSOLE_WIDTH * 8, CONSOLE_HEIGHT * 8, BufferedImage.TYPE_INT_ARGB);//BufferedImage.TYPE_BYTE_INDEXED, colors.getICM256());
+        BufferedImage image = new BufferedImage(CONSOLE_WIDTH * 8, CONSOLE_HEIGHT * 8, BufferedImage.TYPE_INT_ARGB);//BufferedImage.TYPE_BYTE_INDEXED, colors.getICM256());
         Graphics drawToImage = image.createGraphics();
         
         //drawToImage.setColor(new Color(0,0,0,0));

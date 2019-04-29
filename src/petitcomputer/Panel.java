@@ -145,14 +145,32 @@ public class Panel implements ComponentPTC {
         return mainImage;
     }
     
+    /**
+     * Clears the panel.
+     */
+    public void clear(){
+        console.cls();
+        back.bgclr();
+    }
+    
     @Override
     public Errors act(StringPTC command, ArrayList<ArrayList> args) {
-        System.out.println("PANEL act : " +  command.toString());
+        Debug.print(Debug.ACT_FLAG, "PANEL act : " + command.toString() + "ARGS: " + args.toString());
         switch (command.toString().toLowerCase()){
             case "pnltype":
                 StringPTC type = (StringPTC) eval.eval(args.get(0));
                 
                 pnltype(type);
+                break;
+            case "pnlstr":
+                NumberPTC x = (NumberPTC) eval.eval(args.get(0));
+                NumberPTC y = (NumberPTC) eval.eval(args.get(1));
+                StringPTC s = (StringPTC) eval.eval(args.get(2));
+                NumberPTC c = new NumberPTC(0);
+                if (args.size() == 3)
+                    c = (NumberPTC) eval.eval(args.get(3));
+                
+                pnlstr(s, x, y, c);
                 break;
             default:
                 System.out.println("PANEL ERROR: " + command.toString());

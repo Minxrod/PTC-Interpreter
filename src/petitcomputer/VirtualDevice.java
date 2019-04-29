@@ -1,5 +1,6 @@
 package petitcomputer;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -32,6 +33,8 @@ public class VirtualDevice implements ComponentPTC{
         GROUP_STRING = 14,
         GROUP_CODE = 15,
         GROUP_UNDEFINED = 99;
+    
+    private boolean visible[];
     
     //necessary info-storage classes
     Program program;
@@ -97,6 +100,7 @@ public class VirtualDevice implements ComponentPTC{
         StringOperations.setVars(vars);
         
         setSysVars();
+        visible = new boolean[]{true, true, true, true, true, true};
     }
     
     public void execute(){
@@ -150,6 +154,8 @@ public class VirtualDevice implements ComponentPTC{
         Graphics g = image.createGraphics();
         
         //panel!
+        g.drawImage(graphics.createImage(1), 0, 0, null);
+        g.drawImage(bg.createImage(1), 0, 0, null);
         g.drawImage(panel.createImage(), 0, 0, null);
         
         return image;
@@ -190,6 +196,9 @@ public class VirtualDevice implements ComponentPTC{
                 break;
             case GROUP_FILE:
                 r.act(command, args);
+                break;
+            case GROUP_PROCESS:
+                this.localAct(command, args);
                 break;
         }
         
@@ -237,6 +246,7 @@ public class VirtualDevice implements ComponentPTC{
                 group = GROUP_CONSOLE;
                 break;
             case "visible":
+            case "acls":
                 group = GROUP_PROCESS;
                 break;
             case "if":
@@ -357,6 +367,55 @@ public class VirtualDevice implements ComponentPTC{
     }
     public Evaluator getEval(){
         return eval;
+    }
+    
+    /**
+     * Method to perform commands with wide-ranging effects on objects.
+     * Commands like ACLS and VISIBLE that affect many objects possessed by
+     * VirtualDevice are to be executed from VirtualDevice instead of
+     * the objects.
+     * @param command
+     * @param args 
+     */
+    public void localAct(StringPTC command, ArrayList<ArrayList> args){
+        Debug.print(Debug.ACT_FLAG, "ACT branch PROCESS: " + command.toString() + " ARGS: " + args.toString());
+        switch (command.toString().toLowerCase()){
+            case "acls":
+                console.cls();
+                bg.clear();
+                panel.clear();
+                graphics.clear();
+                break;
+            case "visible":
+                int c = ((NumberPTC)eval.eval(args.get(0))).getIntNumber();
+                int p = ((NumberPTC)eval.eval(args.get(1))).getIntNumber();
+                int b1 = ((NumberPTC)eval.eval(args.get(2))).getIntNumber();
+                int b2 = ((NumberPTC)eval.eval(args.get(3))).getIntNumber();
+                int s = ((NumberPTC)eval.eval(args.get(4))).getIntNumber();
+                int g = ((NumberPTC)eval.eval(args.get(5))).getIntNumber();
+                
+                visible(c, p, b1, b2, s, g);
+            default:
+                Debug.print(Debug.ACT_FLAG, "ACT ERROR PROCESS: " + command.toString());
+        }
+    }
+    
+    /**
+     * Sets visibility of various components.
+     * @param con console
+     * @param pnl panel
+     * @param bg1 foreground bg layer
+     * @param bg2 background bg layer
+     * @param spr sprites
+     * @param grp graphics
+     */
+    public void visible(int con, int pnl, int bg1, int bg2, int spr, int grp){
+        visible[0] = con != 0;
+        visible[1] = pnl != 0;
+        visible[2] = bg1 != 0;
+        visible[3] = bg2 != 0;
+        visible[4] = spr != 0;
+        visible[5] = grp != 0;
     }
     
     /**

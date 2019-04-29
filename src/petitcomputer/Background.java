@@ -47,6 +47,12 @@ public class Background implements ComponentPTC{
         return image;
     }
 
+    public void clear(){
+        for (BGLayer[] screen: layer)
+            for (BGLayer l: screen)
+                l.bgclr();
+    }
+    
     @Override
     public Errors act(StringPTC command, ArrayList<ArrayList> args) {
         System.out.println("Background ACT branch: " + command.toString());

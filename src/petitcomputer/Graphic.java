@@ -47,6 +47,13 @@ public class Graphic implements ComponentPTC {
         return layer[displayLayer[page]].getImage();
     }
     
+    public void clear(){
+        for (GRPLayer l : layer){
+            l.gcolor(0);
+            l.gcls();
+        }
+    }
+    
     @Override
     public Errors act(StringPTC command, ArrayList<ArrayList> args) {
         Debug.print(Debug.ACT_FLAG, "ACT branch GRAPHIC: " + command + " ARGS: " + args);

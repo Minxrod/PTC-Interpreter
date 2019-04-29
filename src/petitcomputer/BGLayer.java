@@ -86,8 +86,7 @@ public class BGLayer {
      */
     public void bgclr(){
         tiles = new short[size][size];
-        g.fillRect(0, 0, 512, 512);
-        
+        bgfill(0, 0, 63, 63, 0);
     }
     
     /**
