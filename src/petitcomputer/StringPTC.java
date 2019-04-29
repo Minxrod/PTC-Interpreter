@@ -116,9 +116,9 @@ public class StringPTC extends VariablePTC {
      */
     public NumberPTC getNumberFromString(){
         NumberPTC num;
-        System.out.println(this.toString());
+        //System.out.println(this.toString());
         num = new NumberPTC(Double.valueOf(this.toString()));
-        System.out.println(num.getDoubleNumber());
+        //System.out.println(num.getDoubleNumber());
         return num;
     }
     
@@ -186,6 +186,10 @@ public class StringPTC extends VariablePTC {
         return String.valueOf(temp);
     }
     
+    /**
+     * Returns a reference to this StringPTC object, unaltered.
+     * @return 
+     */
     @Override
     public StringPTC toStringPTC(){
         return this;

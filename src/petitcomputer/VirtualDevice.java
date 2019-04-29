@@ -720,9 +720,10 @@ public class VirtualDevice implements ComponentPTC{
                             } else if (items.get(location-1).getType() == VariablePTC.STRING_LITERAL &&
                                     items.get(location+1).getType() == VariablePTC.STRING_LITERAL){
                                 //do some string math or something
-                                StringPTC first = (StringPTC) items.get(location-1);
-                                first.add((StringPTC) items.get(location+1));
-                                items.set(location, first);
+                                StringPTC newString = new StringPTC(0); //ensure a new object is used
+                                newString.add((StringPTC) items.get(location-1));
+                                newString.add((StringPTC) items.get(location+1));
+                                items.set(location, newString);
                                 items.remove(location-1);
                                 items.remove(location);
                             }   break;
