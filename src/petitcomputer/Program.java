@@ -539,14 +539,16 @@ public class Program implements ComponentPTC {
 
                 switch (arg) {
                     case "then":
-                        thenLocation = i + 1;
+                        if (thenLocation == 0)
+                            thenLocation = i + 1;
                         break;
                     case "goto":
                         if (thenLocation == 0) //prevent "...THEN <something>:GOTO..." from breaking and skipping something, right?
                             thenLocation = i;
                         break;
                     case "else":
-                        elseLocation = i + 1;
+                        if (elseLocation == 0)
+                            elseLocation = i + 1;
                         break;
                     default: //obsolete, but good for debug and might be useful later
                         if (thenLocation == 0) //hasn't found end of expression
