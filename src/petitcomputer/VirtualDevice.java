@@ -1,6 +1,5 @@
 package petitcomputer;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -35,6 +34,14 @@ public class VirtualDevice implements ComponentPTC{
         GROUP_UNDEFINED = 99;
     
     private boolean visible[];
+    
+    private static final int
+        V_CONSOLE = 0,
+        V_PANEL = 1,
+        V_BG0 = 2,
+        V_BG1 = 3,
+        V_SPRITE = 4,
+        V_GRAPHIC = 5; 
     
     //necessary info-storage classes
     Program program;
@@ -143,9 +150,12 @@ public class VirtualDevice implements ComponentPTC{
         Graphics g = image.createGraphics();
         
         //actual draw order will be based on draw priority, but this is unfinished for now.
-        g.drawImage(graphics.createImage(0), 0, 0, null);
-        g.drawImage(bg.createImage(0), 0, 0, null);
-        g.drawImage(console.createImage(), 0, 0, null);
+        if (visible[V_GRAPHIC])
+            g.drawImage(graphics.createImage(0), 0, 0, null);
+        if (visible[V_BG0])
+            g.drawImage(bg.createImage(0), 0, 0, null);
+        if (visible[V_CONSOLE])
+            g.drawImage(console.createImage(), 0, 0, null);
         
         return image;
     }
@@ -154,9 +164,12 @@ public class VirtualDevice implements ComponentPTC{
         Graphics g = image.createGraphics();
         
         //panel!
-        g.drawImage(graphics.createImage(1), 0, 0, null);
-        g.drawImage(bg.createImage(1), 0, 0, null);
-        g.drawImage(panel.createImage(), 0, 0, null);
+        if (visible[V_GRAPHIC])
+            g.drawImage(graphics.createImage(1), 0, 0, null);
+        if (visible[V_BG1])
+            g.drawImage(bg.createImage(1), 0, 0, null);
+        if (visible[V_PANEL])
+            g.drawImage(panel.createImage(), 0, 0, null);
         
         return image;
     }
@@ -383,7 +396,8 @@ public class VirtualDevice implements ComponentPTC{
             case "acls":
                 console.cls();
                 bg.clear();
-                panel.clear();
+                //note: seems that the panel isn't actually modified by ACLS.
+                //panel.clear(); 
                 graphics.clear();
                 break;
             case "visible":
