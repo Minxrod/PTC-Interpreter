@@ -735,6 +735,8 @@ public class VirtualDevice implements ComponentPTC{
                                     items.get(location+1).getType() == VariablePTC.STRING_LITERAL){
                                 //do some string math or something
                                 StringPTC newString = new StringPTC(0); //ensure a new object is used
+                                newString.setLine(((StringPTC)items.get(location+1)).getLine()); //maintain state of linebreak/tab
+                                newString.setTab(((StringPTC)items.get(location+1)).getTab());
                                 newString.add((StringPTC) items.get(location-1));
                                 newString.add((StringPTC) items.get(location+1));
                                 items.set(location, newString);
