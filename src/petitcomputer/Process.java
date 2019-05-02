@@ -32,6 +32,10 @@ public class Process implements Runnable {
         device.setInput(buttons, keyboard);
     }
     
+    public void advFrame(){
+        device.setSysVars();
+    }
+    
     public Image getImage(String screenName){
         if (device != null)
             return device.getImage(screenName.equals("upper"));

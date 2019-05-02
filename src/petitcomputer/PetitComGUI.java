@@ -143,12 +143,16 @@ public class PetitComGUI implements Runnable {
         }
     }
     
+    /**
+     * Action to be called once per frame.
+     */
     private class UpdateAction implements ActionListener {
 
         @Override
         public synchronized void actionPerformed(ActionEvent e) {
             frame.repaint();
             processor.setInput(button, key);
+            processor.advFrame();
         }
     }
     

@@ -132,6 +132,10 @@ public class VirtualDevice implements ComponentPTC{
         
         String time = LocalTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME);
         vars.setVariable(VariablesII.SYSTEM_VARIABLES[VariablesII.TIME], new StringPTC(time));
+        
+        NumberPTC mcntl = (NumberPTC) vars.getVariable(VariablesII.SYSTEM_VARIABLES[VariablesII.MAINCNTL]);
+        mcntl = new NumberPTC(mcntl.getIntNumber() + 1);
+        vars.setVariable(VariablesII.SYSTEM_VARIABLES[VariablesII.MAINCNTL], mcntl);
     }
     /**
      * Gets the image of the program at the current frame.
@@ -742,7 +746,8 @@ public class VirtualDevice implements ComponentPTC{
                                 items.set(location, newString);
                                 items.remove(location-1);
                                 items.remove(location);
-                            }   break;
+                            }
+                            break;
                         case "-":
                             items.set(location, MathPTC.sub((NumberPTC)items.get(location-1), (NumberPTC)items.get(location+1)));
                             items.remove(location-1);
