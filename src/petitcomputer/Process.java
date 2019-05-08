@@ -33,6 +33,7 @@ public class Process implements Runnable {
     }
     
     public void advFrame(){
+        device.advFrame();
         device.setSysVars();
     }
     
