@@ -33,7 +33,9 @@ public class VirtualDevice implements ComponentPTC{
         GROUP_CODE = 15,
         GROUP_UNDEFINED = 99;
     
-    private boolean visible[];
+    private volatile long maincnt;
+    
+    private final boolean visible[];
     
     private static final int
         V_CONSOLE = 0,
@@ -86,7 +88,7 @@ public class VirtualDevice implements ComponentPTC{
         data = new Data(vars, eval);
         data.setProgramData(items);
         
-        input = new Input();
+        input = new Input(eval);
         
         console = new Console(r.getBGFU(), r.getCOL0(), eval);
         console.setVariables(vars);
@@ -122,10 +124,17 @@ public class VirtualDevice implements ComponentPTC{
     }
     
     /**
+     * Updates the frame counter.
+     */
+    public void advFrame(){
+        maincnt++;
+    }
+    
+    /**
      * Updates a variety of system variables. To be called once per frame.
      */
     public final void setSysVars(){
-        vars.setVariable(VariablesII.SYSTEM_VARIABLES[VariablesII.FREEMEM], new NumberPTC(1024));
+        vars.setVariable(VariablesII.SYSTEM_VARIABLES[VariablesII.FREEMEM], new NumberPTC(1024)); //implement if memory is actually used somewhere
         
         String date = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
         vars.setVariable(VariablesII.SYSTEM_VARIABLES[VariablesII.DATE], new StringPTC(date));
@@ -133,9 +142,7 @@ public class VirtualDevice implements ComponentPTC{
         String time = LocalTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME);
         vars.setVariable(VariablesII.SYSTEM_VARIABLES[VariablesII.TIME], new StringPTC(time));
         
-        NumberPTC mcntl = (NumberPTC) vars.getVariable(VariablesII.SYSTEM_VARIABLES[VariablesII.MAINCNTL]);
-        mcntl = new NumberPTC(mcntl.getIntNumber() + 1);
-        vars.setVariable(VariablesII.SYSTEM_VARIABLES[VariablesII.MAINCNTL], mcntl);
+        vars.setVariable(VariablesII.SYSTEM_VARIABLES[VariablesII.MAINCNTL], new NumberPTC(maincnt));
     }
     /**
      * Gets the image of the program at the current frame.
@@ -149,6 +156,7 @@ public class VirtualDevice implements ComponentPTC{
         else
             return getBottomImage();
     }
+    
     private Image getTopImage(){
         BufferedImage image = new BufferedImage(256, 192, BufferedImage.TYPE_INT_ARGB);
         Graphics g = image.createGraphics();
@@ -263,6 +271,7 @@ public class VirtualDevice implements ComponentPTC{
                 group = GROUP_CONSOLE;
                 break;
             case "visible":
+            case "vsync":
             case "acls":
                 group = GROUP_PROCESS;
                 break;
@@ -413,6 +422,11 @@ public class VirtualDevice implements ComponentPTC{
                 int g = ((NumberPTC)eval.eval(args.get(5))).getIntNumber();
                 
                 visible(c, p, b1, b2, s, g);
+            case "vsync":
+                int frames = ((NumberPTC) eval.eval(args.get(0))).getIntNumber();
+                
+                vsync(frames);
+                break;
             default:
                 Debug.print(Debug.ACT_FLAG, "ACT ERROR PROCESS: " + command.toString());
         }
@@ -434,6 +448,14 @@ public class VirtualDevice implements ComponentPTC{
         visible[3] = bg2 != 0;
         visible[4] = spr != 0;
         visible[5] = grp != 0;
+    }
+    
+    public void vsync(int frames){
+        long waitUntil = frames + maincnt;
+        
+        while (maincnt < waitUntil){
+            
+        }
     }
     
     /**
