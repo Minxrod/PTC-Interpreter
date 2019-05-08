@@ -11,20 +11,37 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import static petitcomputer.CharacterPTC.Char;
 import static petitcomputer.CharacterPTC.Char.*;
+import petitcomputer.VirtualDevice.Evaluator;
 
 /**
  * Class to store and retrieve input data.
  * @author minxr
  */
 public class Input implements ComponentPTC{
+    /**
+     * Number of hardware buttons emulated.
+     */
+    private static final int BUTTON_COUNT = 12; 
+    
+    /**
+     * Keyboard backspace key.
+     */
     public static final int BACKSPACE = 15;
     private final Char[][] chars;
     
+    int oldButtons;
     volatile int buttons;
+    
     volatile int keyboard;
     volatile boolean set, reset;
     
-    public Input(){
+    ButtonInfo buttonInfo[];
+    
+    Evaluator eval;
+    
+    public Input(Evaluator ev){
+        eval = ev;
+
         buttons = 0;
         keyboard = 0;
         
@@ -44,15 +61,25 @@ public class Input implements ComponentPTC{
         };
         Debug.print(Debug.INPUT_FLAG, "KEYS:" + Arrays.deepToString(chars));
         //Debug.print(Debug.INPUT_FLAG, "KEYCHARS:" + chars[0].getStringPTC().toString());
+        
+        //Initialize all buttons and their information
+        buttonInfo = new ButtonInfo[BUTTON_COUNT];
+        int mask = 1;
+        for (ButtonInfo b : buttonInfo){
+            b = new ButtonInfo(mask);
+            mask <<= 1;
+        }
     }
     
     public void setButton(int b){
+        oldButtons = buttons;
         buttons = b;
-        if ((!set && b != 0)||(!reset && b == 0)){ //if button pushed and waiting for button OR waiting for no button and button released.
-            set = b != 0; //button has been pushed
-            reset = b == 0; //button not pushed
-        }
         //Debug.print(Debug.INPUT_FLAG, "setButton: " + b);
+        for (ButtonInfo button : buttonInfo)
+            if ((button.mask & buttons) != 0) //if button is pressed
+                button.timeHeld++;
+            else //button is released
+                button.timeHeld = 0;
     }
     
     public void setKSC(int ksc){
@@ -64,11 +91,67 @@ public class Input implements ComponentPTC{
         //Debug.print(Debug.INPUT_FLAG, "setButton: " + ksc);
     }
     
+    /**
+     * Sets the button repeat values.
+     * @param id
+     * @param start
+     * @param repeat 
+     */
+    public void brepeat(int id, int start, int repeat){
+        buttonInfo[id].repeatStart = start;
+        buttonInfo[id].repeatInterval = repeat;
+    }
+    
+    /**
+     * Returns the value returned by the function BUTTON().
+     * @return button
+     */
     public NumberPTC button(){
         NumberPTC b = new NumberPTC(buttons);
         
         Debug.print(Debug.INPUT_FLAG, "button: " + b.toString());
         return b;
+    }
+    
+    public NumberPTC button(int i){
+        switch (i){
+            case 0:
+                return button();
+            case 1:
+                return btrig();
+            case 2:
+                
+            case 3:
+            default:
+                return btrig();
+        }
+    }
+    
+    /**
+     * BTRIG() as a function.
+     * @return 
+     */
+    public NumberPTC btrig(){
+        //returns button value if button time is on line with repeat or initial press.
+        //button() value: buttons
+        //btrig() button temp value: button
+        int button = buttons;
+        for (ButtonInfo b : buttonInfo){
+            /* NOTE:
+            The equation provided is based off of my testing.
+            Setting a BREPEAT of b, 15, 2 would start consistently
+            on the 15th frame, repeating on the 18th, 21st, etc.
+            In other words, the delay set by BREPEAT is actually 
+            the length between two presses, exclusive of the frames where
+            the buton is pressed. (hence the "modulo repeat + 1")
+            */
+            if ((b.repeatInterval != 0) && ((b.timeHeld - b.repeatStart) % (b.repeatInterval + 1) == 0))
+                ;
+            else //button should not repeat
+                button = buttons & ~b.mask;
+        }
+        Debug.print(Debug.INPUT_FLAG, "" + button);
+        return new NumberPTC(button);
     }
     
     public int getButtons(){
@@ -84,6 +167,10 @@ public class Input implements ComponentPTC{
         return inkey;
     }
     
+    /**
+     * Returns the value of KEYBOARD as a Java integer.
+     * @return 
+     */
     public int keyboard(){
         Debug.print(Debug.INPUT_FLAG, "keyboard: " + keyboard);
         
@@ -120,7 +207,11 @@ public class Input implements ComponentPTC{
     public Errors act(StringPTC command, ArrayList<ArrayList> args) {
         switch (command.toString().toLowerCase()){
             case "brepeat":
-                ; //not yet...
+                NumberPTC buttonID = (NumberPTC) eval.eval(args.get(0));
+                NumberPTC start = (NumberPTC) eval.eval(args.get(1));
+                NumberPTC repeat = (NumberPTC) eval.eval(args.get(2));
+                
+                brepeat(buttonID.getIntNumber(), start.getIntNumber(), repeat.getIntNumber());
                 break;
         }
         return null;
@@ -131,7 +222,9 @@ public class Input implements ComponentPTC{
         Debug.print(Debug.ACT_FLAG, "FUNC branch INPUT: " + function.toString() + "ARGS: " + args.toString());
         switch (function.toString().toLowerCase()){
             case "button":
-                return button();
+                NumberPTC mode = (NumberPTC) args.get(0);
+                
+                return button(mode.getIntNumber());
             case "btrig":
                 return button();
             case "inkey$":
@@ -140,6 +233,37 @@ public class Input implements ComponentPTC{
                 Debug.print(Debug.ACT_FLAG, "FUNC branch INPUT ERROR: " + function.toString());
                 return null;
         }
+    }
+    
+    /**
+     * Class intended to be used like a struct to hold several arrays of data.
+     */
+    private class ButtonInfo {
+        
+        /**
+         * Creates a ButtonInfo with the given button mask.
+         * @param m button mask
+         */
+        public ButtonInfo(int m){
+            mask = m;
+        }
+        
+        /**
+         * How long the button has been pressed
+         */
+        public int timeHeld; 
+        /**
+         * How long to wait before repeating inputs
+         */
+        public int repeatStart;
+        /**
+         * How long to wait before repeating after the first repeat
+         */
+        public int repeatInterval;
+        /**
+         * the button bitmask. Should only set set once
+         */
+        public final int mask;
     }
 }
 
