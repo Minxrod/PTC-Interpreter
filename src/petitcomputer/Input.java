@@ -64,10 +64,8 @@ public class Input implements ComponentPTC{
         
         //Initialize all buttons and their information
         buttonInfo = new ButtonInfo[BUTTON_COUNT];
-        int mask = 1;
-        for (ButtonInfo b : buttonInfo){
-            b = new ButtonInfo(mask);
-            mask <<= 1;
+        for (int i = 0; i < BUTTON_COUNT; i++){
+            buttonInfo[i] = new ButtonInfo(1 << i);
         }
     }
     
@@ -137,20 +135,26 @@ public class Input implements ComponentPTC{
         //btrig() button temp value: button
         int button = buttons;
         for (ButtonInfo b : buttonInfo){
-            /* NOTE:
-            The equation provided is based off of my testing.
-            Setting a BREPEAT of b, 15, 2 would start consistently
-            on the 15th frame, repeating on the 18th, 21st, etc.
-            In other words, the delay set by BREPEAT is actually 
-            the length between two presses, exclusive of the frames where
-            the buton is pressed. (hence the "modulo repeat + 1")
-            */
-            if ((b.repeatInterval != 0) && ((b.timeHeld - b.repeatStart) % (b.repeatInterval + 1) == 0))
-                ;
-            else //button should not repeat
-                button = buttons & ~b.mask;
+            //check if button is active
+            if (b.timeHeld > 0){ //button is pressed
+                //BTRIG will return the button if...
+                //timeHeld = 1
+                //timeHeld = repeatStart
+                //timeHeld = repeatStart + k * (repeatInterval + 1)
+                
+                if (b.timeHeld == 1)
+                    continue;//instant pressed
+                if (b.timeHeld == b.repeatStart + 1)
+                    continue;
+                if (b.timeHeld > b.repeatStart)
+                    if ((b.timeHeld - b.repeatStart) % (b.repeatInterval + 1) == 0)
+                        continue;
+                
+                button &= ~b.mask;
+                
+            }
         }
-        Debug.print(Debug.INPUT_FLAG, "" + button);
+        Debug.print(Debug.INPUT_FLAG, "btrig: " + button);
         return new NumberPTC(button);
     }
     
@@ -205,6 +209,7 @@ public class Input implements ComponentPTC{
 
     @Override
     public Errors act(StringPTC command, ArrayList<ArrayList> args) {
+        Debug.print(Debug.ACT_FLAG, "ACT branch INPUT: " + command + "ARGS: " + args.toString());
         switch (command.toString().toLowerCase()){
             case "brepeat":
                 NumberPTC buttonID = (NumberPTC) eval.eval(args.get(0));
@@ -213,6 +218,8 @@ public class Input implements ComponentPTC{
                 
                 brepeat(buttonID.getIntNumber(), start.getIntNumber(), repeat.getIntNumber());
                 break;
+            default:
+                Debug.print(Debug.ACT_FLAG, "ACT branch ERROR " + command);
         }
         return null;
     }
@@ -226,7 +233,7 @@ public class Input implements ComponentPTC{
                 
                 return button(mode.getIntNumber());
             case "btrig":
-                return button();
+                return btrig();
             case "inkey$":
                 return inkey();
             default:
