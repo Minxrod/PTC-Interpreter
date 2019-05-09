@@ -151,7 +151,6 @@ public class Input implements ComponentPTC{
                         continue;
                 
                 button &= ~b.mask;
-                
             }
         }
         Debug.print(Debug.INPUT_FLAG, "btrig: " + button);
