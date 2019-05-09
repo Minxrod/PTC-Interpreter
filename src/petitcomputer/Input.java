@@ -144,11 +144,13 @@ public class Input implements ComponentPTC{
                 
                 if (b.timeHeld == 1)
                     continue;//instant pressed
-                if (b.timeHeld == b.repeatStart + 1)
-                    continue;
-                if (b.timeHeld > b.repeatStart)
-                    if ((b.timeHeld - b.repeatStart) % (b.repeatInterval + 1) == 0)
+                if (b.repeatInterval != 0){  
+                    if (b.timeHeld == b.repeatStart + 1)
                         continue;
+                    if (b.timeHeld > b.repeatStart)
+                        if ((b.timeHeld - b.repeatStart) % (b.repeatInterval + 1) == 0)
+                            continue;
+                }
                 
                 button &= ~b.mask;
             }
