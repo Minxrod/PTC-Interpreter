@@ -41,9 +41,8 @@ public class Panel implements ComponentPTC {
     
     /**
      * Initializes the panel for keyboard usage. I brute-forced this manually because it seemed easier at the time. Don't question it.
-     */
+     */ 
     private void drawBGD(){
-        
         /*int[] keyX = new int[]{ 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27,
                             0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30,
                                 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29,
@@ -141,11 +140,10 @@ public class Panel implements ComponentPTC {
     }
     
     /**
-     * Clears the panel.
+     * Clears the panel console.
      */
-    public void clear(){
+    public void cls(){
         console.cls();
-        back.bgclr();
     }
     
     @Override
@@ -162,7 +160,7 @@ public class Panel implements ComponentPTC {
                 NumberPTC y = (NumberPTC) eval.eval(args.get(1));
                 StringPTC s = (StringPTC) eval.eval(args.get(2));
                 NumberPTC c = new NumberPTC(0);
-                if (args.size() == 3)
+                if (args.size() == 4)
                     c = (NumberPTC) eval.eval(args.get(3));
                 
                 pnlstr(s, x, y, c);

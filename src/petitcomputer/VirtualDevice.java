@@ -264,7 +264,7 @@ public class VirtualDevice implements ComponentPTC{
         switch (function.toLowerCase()){
             case "print":
             case "locate":
-            case "cls":
+            //case "cls": actually affects PANEL as well
             case "color":
             case "input":
             case "chkchr$":
@@ -273,6 +273,7 @@ public class VirtualDevice implements ComponentPTC{
             case "visible":
             case "vsync":
             case "acls":
+            case "cls":
                 group = GROUP_PROCESS;
                 break;
             case "if":
@@ -406,12 +407,16 @@ public class VirtualDevice implements ComponentPTC{
     public void localAct(StringPTC command, ArrayList<ArrayList> args){
         Debug.print(Debug.ACT_FLAG, "ACT branch PROCESS: " + command.toString() + " ARGS: " + args.toString());
         switch (command.toString().toLowerCase()){
+            case "cls": //cls clears both the upper and lower consoles.
+                console.cls();
+                panel.cls();
+                break;
             case "acls":
                 console.cls();
                 bg.clear();
-                //note: seems that the panel isn't actually modified by ACLS.
-                //panel.clear(); 
+                panel.cls();
                 graphics.clear();
+                
                 break;
             case "visible":
                 int c = ((NumberPTC)eval.eval(args.get(0))).getIntNumber();
