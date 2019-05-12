@@ -123,6 +123,10 @@ public class VirtualDevice implements ComponentPTC{
         input.setKSC(keyboard);
     }
     
+    public void setTouch(boolean tchst, int tchx, int tchy, int tchtime) {
+        input.setTouch(tchst, tchx, tchy, tchtime);
+    }
+    
     /**
      * Updates the frame counter.
      */
@@ -143,6 +147,8 @@ public class VirtualDevice implements ComponentPTC{
         vars.setVariable(VariablesII.SYSTEM_VARIABLES[VariablesII.TIME], new StringPTC(time));
         
         vars.setVariable(VariablesII.SYSTEM_VARIABLES[VariablesII.MAINCNTL], new NumberPTC(maincnt));
+        
+        input.setSystemVariables(vars); //KEYBOARD, all touch related vars
     }
     /**
      * Gets the image of the program at the current frame.
@@ -462,6 +468,8 @@ public class VirtualDevice implements ComponentPTC{
             
         }
     }
+
+
     
     /**
      * Evaluates a string expression and converts it to the correct format: number, or string. Requires device to call functions.

@@ -49,5 +49,9 @@ public class Process implements Runnable {
             return i;
         }
     }
+
+    public void setTouch(boolean tchst, int tchx, int tchy, int tchtime) {
+        device.setTouch(tchst, tchx, tchy, tchtime);
+    }
     
 }

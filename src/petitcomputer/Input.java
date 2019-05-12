@@ -34,6 +34,8 @@ public class Input implements ComponentPTC{
     
     volatile int keyboard;
     volatile boolean set, reset;
+    int tchtime, tchx, tchy;
+    boolean tchst;
     
     ButtonInfo buttonInfo[];
     
@@ -44,6 +46,10 @@ public class Input implements ComponentPTC{
 
         buttons = 0;
         keyboard = 0;
+        tchx = 0;
+        tchy = 0;
+        tchtime = 0;
+        tchst = false;
         
         chars = new Char[6][];
         //This is the default keyboard's character set.
@@ -87,6 +93,20 @@ public class Input implements ComponentPTC{
             reset = ksc == 0; //button not pushed
         }
         //Debug.print(Debug.INPUT_FLAG, "setButton: " + ksc);
+    }
+    
+    /**
+     * Sets the current values of various touchscreen variables.
+     * @param tchst
+     * @param tchx
+     * @param tchy
+     * @param tchtime 
+     */
+    public void setTouch(boolean tchst, int tchx, int tchy, int tchtime) {
+        this.tchst = tchst;
+        this.tchx = tchx;
+        this.tchy = tchy;
+        this.tchtime = tchtime;
     }
     
     /**
@@ -206,6 +226,10 @@ public class Input implements ComponentPTC{
     
     public void setSystemVariables(VariablesII vars){
         vars.setVariable(new StringPTC("KEYBOARD"), new NumberPTC(keyboard));
+        vars.setVariable(new StringPTC("TCHX"), new NumberPTC(tchx));
+        vars.setVariable(new StringPTC("TCHY"), new NumberPTC(tchy));
+        vars.setVariable(new StringPTC("TCHTIME"), new NumberPTC(tchtime));
+        vars.setVariable(new StringPTC("TCHST"), tchst ? new NumberPTC(1) : new NumberPTC(0));
     }
 
     @Override
@@ -230,7 +254,9 @@ public class Input implements ComponentPTC{
         Debug.print(Debug.ACT_FLAG, "FUNC branch INPUT: " + function.toString() + "ARGS: " + args.toString());
         switch (function.toString().toLowerCase()){
             case "button":
-                NumberPTC mode = (NumberPTC) args.get(0);
+                NumberPTC mode = new NumberPTC(0);
+                if (!args.isEmpty())
+                    mode = (NumberPTC) args.get(0);
                 
                 return button(mode.getIntNumber());
             case "btrig":

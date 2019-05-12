@@ -38,6 +38,8 @@ public class PetitComGUI implements Runnable {
     
     int button;
     int key;
+    int tchx, tchy, tchtime;
+    boolean tchst;
     
     Thread process;
     Process processor;
@@ -68,6 +70,7 @@ public class PetitComGUI implements Runnable {
         
         bot = new NPanel("lower");
         bot.setBackground(Color.BLACK);
+        bot.addMouseListener(new Mouse());
         
         total = new JPanel(new GridLayout(2,1));
         total.add(top);
@@ -152,7 +155,29 @@ public class PetitComGUI implements Runnable {
         public synchronized void actionPerformed(ActionEvent e) {
             frame.repaint();
             processor.setInput(button, key);
+            if (tchst){
+                tchtime++;
+                Point tchp = bot.getMousePosition(); //get location of mouse relative to component
+                if (tchp != null){
+                    tchx = tchp.x;
+                    tchy = tchp.y;
+                }
+            }
+            processor.setTouch(tchst, tchx, tchy, tchtime);
             processor.advFrame();
+        }
+    }
+    
+    private class Mouse extends MouseAdapter{
+        @Override
+        public void mousePressed(MouseEvent e){
+            tchst = true;
+        }
+        
+        @Override
+        public void mouseReleased(MouseEvent e){
+            tchst = false;
+            tchtime = 0;
         }
     }
     
