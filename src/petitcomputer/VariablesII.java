@@ -312,9 +312,8 @@ public class VariablesII {
     
     public void act(StringPTC command, ArrayList<ArrayList> args){
         if (command.toString().toLowerCase().equals("dim")){
-            ArrayList<VariablePTC> arg = args.get(0);
-            
-            createArray(arg);
+            for (ArrayList<VariablePTC> arg : args)
+                createArray(arg);
         }
     }
     
