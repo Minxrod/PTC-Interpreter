@@ -331,8 +331,8 @@ class Console implements ComponentPTC {
     public VariablePTC func(StringPTC function, ArrayList<VariablePTC> args){
         switch (function.toString().toLowerCase()){
             case "chkchr$":
-                NumberPTC x = (NumberPTC) args.get(0); //skip comma
-                NumberPTC y = (NumberPTC) args.get(2);
+                NumberPTC x = (NumberPTC) args.get(0);
+                NumberPTC y = (NumberPTC) args.get(1);
                 
                 return chkchr(x, y);
             default:
