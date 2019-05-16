@@ -302,13 +302,21 @@ class Console implements ComponentPTC {
                 color(col);
                 break;
             case "input":
-                //System.out.println(arguments.toString());
-                StringPTC text = (StringPTC) arguments.get(0).get(0);
-                arguments.get(0).remove(0); //remove string
-                arguments.get(0).remove(0); //remove semicolon
-                ArrayList var = arguments.get(0); //get first element of second argument. (Should only be one element, but just in case it will ignore everything after it. Because of this, it breaks arrays.)
+                if (arguments.get(0).size() > 1){
+                    //System.out.println(arguments.toString());
+                    StringPTC text = (StringPTC) arguments.get(0).get(0);
+                    arguments.get(0).remove(0); //remove string
+                    arguments.get(0).remove(0); //remove semicolon
+                    ArrayList var = arguments.get(0); //get first element of second argument. (Should only be one element, but just in case it will ignore everything after it. Because of this, it breaks arrays.)
                 
-                input(text, var);
+                    input(text, var);
+                } else {
+                    StringPTC text = new StringPTC("");
+                    
+                    ArrayList var = arguments.get(0);
+                    
+                    input(text, var);
+                }
                 break;
             default:
                 Debug.print(Debug.ACT_FLAG, "Console ACT error: " + command.toString());
