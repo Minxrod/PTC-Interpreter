@@ -21,7 +21,7 @@ public class BGLayer {
         size = 64;
         tiles = new short[size][size];
         
-        image = new BufferedImage(512, 512, BufferedImage.TYPE_BYTE_INDEXED, col.getICM256());
+        image = new BufferedImage(512, 512, BufferedImage.TYPE_INT_ARGB);
         g = image.createGraphics();
         
         offsetX = 0;
