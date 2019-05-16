@@ -1,0 +1,19 @@
+The way each single character is stored in this program is pretty interesting, and because of a bunch of strange problems I've run into, I'm going to document some of them.
+
+The characters need to be fast since they're used pretty much everywhere, and only need to be set once pre change. No point in redrawing the entire character everytime you need to display it.
+
+*This is why I switch from using CHR.createImage() to using CHR.getImage(), and also where some problems started to happen regarding my saving of images.
+
+When the image is first requested, it's going to be null, so the image is created using CHR.createImage() on the first run. This is fine. Originally, it didn't matter what you did with the image afterwards because it shouldn't change, but palettes are something that's necessary for many PTC programs.
+
+*This is where I first start researching BufferedImage, and how I might do a palette swap. The solution is to use the same Raster as the original image, but with a new ColorModel. This is surprisingly simple, and decently fast as the image isn't being redrawn completely.
+
+But, this has some drawbacks. Since I swap palettes using the same raster, the appearance of the character entirely depends upon it's initial creation. As such, if it draws wrong once, it will stay wrong for the remainder of the program.
+
+*This is where an interesting "feature" of TYPE_BYTE_INDEXED BufferedImages comes into play. When setting the pixel data of the image, you can not supply a palette index easily, you have to pass an RGB value to setPixel. Somewhere in the BufferedImage class, it matches the RGB value you give it to the closest within the color palette (IndexColorModel).
+
+My problem was that, upon drawing a (default white) console character using the 8th palette (brown), the character would have incorrect colors for the rest of the program. The reason for this, as it turns out, is that the 8th palette contains two very similar colors of brown, and BufferedImage.setPixel() simply matched the first one, which happened to be iirc color 4 within the palette instead of the color of index 15. As such, the character drawn would keep the color 4 of that palette for all other palettes when trying to swap colors later on in the program - for example, turning blue with palette 0 when it should've printed white. This is because instead of color 15:white, it was using color 4:blue. Interesting, if difficult.
+
+The solution to this is to set the index directly by accessing the DataBuffer of the created image; however, this may have unforseen consequences for speed depending on acceleration. A potential workaround is to draw with the default palette and swap afterwards, to ensure unique colors - the problem with this is that it requires a consistent default, which should be able to change.
+
+For now, I will be using the workaround simply because it should always work given the current setup. It will likely be an issue later on - but this should give an idea of how to solve it.
