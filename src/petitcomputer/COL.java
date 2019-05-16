@@ -12,11 +12,44 @@ import java.util.logging.Logger;
  * @author minxr
  */
 public class COL {
-    IndexColorModel icm256;
-    IndexColorModel[] icm16;
+    public static final int PALETTE_SIZE_SMALL = 16,
+                            PALETTE_SIZE_LARGE = 256,
+                            PALETTE_COUNT = 16;
+    
+    private static final IndexColorModel INDEX_TO_COLOR_ADAPTER = createDefaultModel();
+    
+    private IndexColorModel icm256;
+    private IndexColorModel[] icm16;
     short[][] colors; //RGB555 format
     boolean cm; //color mode
     
+    private static IndexColorModel createDefaultModel(){
+        IndexColorModel icmdef;
+        byte r[], g[], b[];
+        r = new byte[PALETTE_SIZE_SMALL];
+        g = new byte[PALETTE_SIZE_SMALL];
+        b = new byte[PALETTE_SIZE_SMALL];
+        for (int i = 0; i < PALETTE_SIZE_SMALL; i++){
+            r[i] = (byte)(16 * i);
+            g[i] = 0;
+            b[i] = 0;
+        }
+        icmdef = new IndexColorModel(4, PALETTE_SIZE_SMALL, r, g, b);
+        return icmdef;
+    }
+    
+    public static IndexColorModel getDefaultModel(){
+        return INDEX_TO_COLOR_ADAPTER;
+    }
+    
+    public static int getDefaultRGBFromIndex(int index){
+        return new Color(index * 16, 0, 0).getRGB();
+    }
+    
+    /**
+     * Creates a new color object. Data must be set using setData.
+     * @param is256ColorMode 
+     */
     public COL(boolean is256ColorMode){
         colors = new short[16][16];
         cm = is256ColorMode;
@@ -100,30 +133,30 @@ public class COL {
      * The full 256 color model is intended for images like the full BG screen or graphics page.
      */
     public void createICM(){
-        icm16 = new IndexColorModel[16]; //array of palettes. Does not apply when using GRPS.
+        icm16 = new IndexColorModel[PALETTE_COUNT]; //array of palettes. Does not apply when using GRPS.
         byte[] r,g,b;
         byte[] u,v,w; //rgb for icm256
         
-        u = new byte[256];
-        v = new byte[256];
-        w = new byte[256];
-        for (int p = 0; p < 16; p++){
-            r = new byte[16];
-            g = new byte[16];
-            b = new byte[16];
-            for (int c = 0; c < 16; c++){
+        u = new byte[PALETTE_SIZE_LARGE];
+        v = new byte[PALETTE_SIZE_LARGE];
+        w = new byte[PALETTE_SIZE_LARGE];
+        for (int p = 0; p < PALETTE_COUNT; p++){
+            r = new byte[PALETTE_SIZE_SMALL];
+            g = new byte[PALETTE_SIZE_SMALL];
+            b = new byte[PALETTE_SIZE_SMALL];
+            for (int c = 0; c < PALETTE_SIZE_SMALL; c++){
                 short col = colors[p][c];
                 r[c] = (byte) getRedFromRGB555(col);
                 g[c] = (byte) getGreenFromRGB555(col);
                 b[c] = (byte) getBlueFromRGB555(col);
-                u[c+16*p] = r[c];
-                v[c+16*p] = g[c];
-                w[c+16*p] = b[c];
+                u[c+PALETTE_SIZE_SMALL*p] = r[c];
+                v[c+PALETTE_SIZE_SMALL*p] = g[c];
+                w[c+PALETTE_SIZE_SMALL*p] = b[c];
             }
             //needs a separate icm for each palette
-            icm16[p] = new IndexColorModel(4, 16, r, g, b, 0);
+            icm16[p] = new IndexColorModel(4, PALETTE_SIZE_SMALL, r, g, b, 0);
         }
-        icm256 = new IndexColorModel(8, 256, u, v, w, 0);
+        icm256 = new IndexColorModel(8, PALETTE_SIZE_LARGE, u, v, w, 0);
         
         Debug.print(Debug.COLOR_FLAG, "256C" + icm256.toString() + " 16C:" + Arrays.toString(icm16));
         //bits, size, r[] g[] b[] a

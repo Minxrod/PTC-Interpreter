@@ -1,12 +1,6 @@
 package petitcomputer;
 
 import java.awt.Image;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Character bank of PTC 8x8 characters.
@@ -87,9 +81,10 @@ public class CHRBank {
         //return i;
     }
     
-    public Image getChrImage(int index, byte palette){
+    //obsolete
+    /*public Image getChrImage(int index, byte palette){
         return characters[index].createImage(colors, palette);
-    }
+    }*/
     
     public int getSize(){
         return size;

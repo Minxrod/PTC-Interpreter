@@ -1,6 +1,5 @@
 package petitcomputer;
 
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 
@@ -19,7 +18,7 @@ public class CHR {
     
     public void setData(byte[] newData){
         data = newData;
-        //image = createImage(col, 0);
+        image = null;
     }
     
     public byte[] getData(){
@@ -27,28 +26,35 @@ public class CHR {
     }
     
     /**
-     * Generates an image from the given COL object and palette number.
-     * @param col
-     * @param pal
+     * Generates the image data from a default palette.
+     * Required to run only once to initialize character data,
+     * or to update the image after new data has been set.
+     * This is done to avoid issues where a palette has two or more
+     * of the same color causing the indexes of the color to change.
      * @return 
      */
-    public BufferedImage createImage(COL col, byte pal){
-        image = new BufferedImage(8, 8, BufferedImage.TYPE_BYTE_INDEXED, col.getICM16(pal));
+    public BufferedImage createImage(){
+        image = new BufferedImage(8, 8, BufferedImage.TYPE_BYTE_INDEXED, COL.getDefaultModel());
         
         for (int y = 0; y < 8; y++){
             for(int x = 0; x < 4; x++){
-                int colorIndex1 = (data[x + 4 * y] & 0xF0) >>> 4;
+                int colorIndex1 = (data[x + 4 * y] >> 4) & 0x0F;
                 int colorIndex2 = data[x + 4 * y] & 0x0F;
                 
-                Color color1 = col.getColor(colorIndex1 + 16 * pal);
-                Color color2 = col.getColor(colorIndex2 + 16 * pal);
-                
-                image.setRGB(2 * x, y, color1.getRGB());
-                image.setRGB(2 * x + 1, y, color2.getRGB());
+                image.setRGB(2 * x, y, COL.getDefaultRGBFromIndex(colorIndex1));//color1.getRGB());
+                image.setRGB(2 * x + 1, y, COL.getDefaultRGBFromIndex(colorIndex2));//color2.getRGB());
             }
         }
         
-        savedPal = pal;
+        /*
+        //byte[] a = ((DataBufferByte)image.getData().getDataBuffer()).getData();
+        //for (int i = 0; i < 8; i++){
+        //    for (int j = 0; j < 8; j++)
+        //        System.out.print(" " + "0123456789abcdef".charAt(a[i * 8 + j]));
+        //    System.out.println();
+        //}*/
+        
+        //savedPal = pal;
         return image;
     }
     
@@ -62,11 +68,13 @@ public class CHR {
      */
     public BufferedImage getImage(COL col, byte pal){
         if (image == null)// || savedPal != pal)
-            createImage(col, (byte) pal); //should only create a new image the first time
+            createImage(); //should only create a new image the first time
         WritableRaster wr = image.getRaster();
         boolean iAPM = image.isAlphaPremultiplied();
         
-        return new BufferedImage(col.getICM16(pal), wr, iAPM, null);
+        image = new BufferedImage(col.getICM16(pal), wr, iAPM, null);
+        //savedPal = pal;
+        return image;
     }
     
 }
