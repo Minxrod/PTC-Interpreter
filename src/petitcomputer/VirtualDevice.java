@@ -492,10 +492,13 @@ public class VirtualDevice implements ComponentPTC{
             Debug.print(Debug.EVALUATOR_FLAG, "evaluate init:" + toEvaluate.toString());
             toEvaluate = evaluateParens(toEvaluate);
             Debug.print(Debug.EVALUATOR_FLAG, "evaluate paren:" + toEvaluate.toString());
+
+            toEvaluate = evaluateFunction(toEvaluate); //reordered because !button() is a valid statement.
+            Debug.print(Debug.EVALUATOR_FLAG, "Evaluate function: " + toEvaluate.toString());
+
             toEvaluate = evaluateUnary(toEvaluate);
             Debug.print(Debug.EVALUATOR_FLAG, "evaluate unary:" + toEvaluate.toString());
-            toEvaluate = evaluateFunction(toEvaluate);
-            Debug.print(Debug.EVALUATOR_FLAG, "Evaluate function: " + toEvaluate.toString());
+
             toEvaluate = evaluateMDMod(toEvaluate);
             Debug.print(Debug.EVALUATOR_FLAG, "evaluate mdm:" + toEvaluate.toString());
             toEvaluate = evaluatePM(toEvaluate);
