@@ -98,30 +98,46 @@ class Console implements ComponentPTC {
     }
     
     /**
-     * Print function designed to take whatever argument was given and convert to the correct format (or return an error)
-     * @param variable 
+     * Prints the given arguments to the emulated console.
+     * @param args 
      */
-    public int print(VariablePTC variable){
-        int error = 0;
-        Debug.print(Debug.CONSOLE_FLAG, "PRINT branch:" + variable.toString());
-        
-        //if (variable == null)
-            //return error;
-        
-        int type = variable.getType();
-        switch (type) {
-            case VariablePTC.NUMBER_LITERAL:
-                print(((NumberPTC)variable).toStringPTC());
-                break;
-            case VariablePTC.STRING_LITERAL:
-                print((StringPTC)variable); //ez StringPTC to StringPTC
-                break;
-            default:
-                System.out.println(variable.toString() + "type: " + variable.getType());
-                break;
+    public void print(ArrayList<ArrayList> args){
+        //Debug.print(Debug.CONSOLE_FLAG, "BEGIN PRINT BRANCH  {");
+        for (int i = 0; i < args.size(); i++){ //each arg is separated by a comma ...
+            ArrayList<VariablePTC> newArg = eval.evaluate(args.get(i));
+            for (VariablePTC smallArg : newArg){
+                write(smallArg); //print args as necessary.
+            }
+            if (i < args.size() - 1) //implies a comma follows the argument
+                tab();
         }
         
-        return error;
+        ArrayList<VariablePTC> lastArg = args.get(args.size() - 1);
+        //check for ending comma
+        if (lastArg.isEmpty())
+            tab();
+        //check for ending semicolon. if not present, newline as usual
+        else if (!lastArg.get(lastArg.size() - 1).equals(Char.SEMICOLON.getStringPTC())){
+            newLine();
+            //Debug.print(Debug.CONSOLE_FLAG, "NEWLINE");        
+        }
+        
+        //Debug.print(Debug.CONSOLE_FLAG, "}  END PRINT BRANCH");
+    }
+    
+    /**
+     * Print function designed to take whatever argument was given
+     * and take the correct action.
+     * @param variable 
+     */
+    private void write(VariablePTC variable){
+        //Debug.print(Debug.CONSOLE_FLAG, "  PRINT:" + variable.toString() + Arrays.toString(variable.toStringPTC().getString()));
+        
+        if (variable.getType() == VariablePTC.STRING_OPERATOR //semicolon separator (concat)
+              && variable.equals(CharacterPTC.Char.SEMICOLON.getStringPTC()))
+            ; //semicolons are ignored; only for separation of variables.
+        else
+            print(variable);
     }
     
     /**
@@ -173,23 +189,48 @@ class Console implements ComponentPTC {
     
     /**
      * Adds characters to the console.
+     * NOTE: old method.
      */
     public void print(StringPTC text){
-        for (int i = 0; i < text.getLength(); i++){
-            characters[currentY][currentX] = text.getCharacter(i);
-            color[currentY][currentX] = (byte) currentColor;
-            //g.drawImage(font.getImage(Byte.toUnsignedInt(text.getCharacter(i)), (byte) currentColor), currentX * 8, currentY * 8, null);
-            if ((currentX == CONSOLE_WIDTH - 1 && currentY == CONSOLE_HEIGHT - 1 && i == text.getLength() - 1 && !text.getLine()))
-                ; //don't advance cursor if a semicolon was encountered at the end AND you are at the edge of the console already.
-            else
-                advanceCursor();
-        }
+        printNoModifier(text);
         if (text.getTab())
             do 
                 advanceCursor();
                 while (currentX % 4 != 0);//whatever the tab calculator is
         if (text.getLine())
             newLine();
+    }
+    
+    /**
+     * Prints a variable to the emulated console. Will not print a line break
+     * at the end of the line.
+     * @param var 
+     */
+    private void print(VariablePTC var){
+        StringPTC text = var.toStringPTC();
+        
+        printNoModifier(text);
+    }
+    
+    /**
+     * Print command to print some text without modifying the final cursor position.
+     * @param var 
+     */
+    private void printNoModifier(VariablePTC var){
+        StringPTC text = var.toStringPTC();
+        for (int i = 0; i < text.getLength(); i++){
+            if (text.getCharacter(i) != Char.LINEBREAK.getIndex())
+                characters[currentY][currentX] = text.getCharacter(i);
+            else
+                newLine(); //if it hits a linebreak, create a linebreak.
+
+            color[currentY][currentX] = (byte) currentColor;
+            //g.drawImage(font.getImage(Byte.toUnsignedInt(text.getCharacter(i)), (byte) currentColor), currentX * 8, currentY * 8, null);
+            if ((currentX == CONSOLE_WIDTH - 1 && currentY == CONSOLE_HEIGHT - 1 && i == text.getLength() - 1))
+                ; //don't advance cursor if a semicolon was encountered at the end AND you are at the edge of the console already.
+            else
+                advanceCursor();
+        }
     }
     
     private void advanceCursor(){
@@ -213,6 +254,12 @@ class Console implements ComponentPTC {
         currentY++;
         scroll();
         
+    }
+    
+    private void tab(){
+        do {
+            advanceCursor();
+        } while (currentX % 4 != 0);//whatever the tab calculator is
     }
     
     private void scroll(){
@@ -280,11 +327,7 @@ class Console implements ComponentPTC {
         Debug.print(Debug.ACT_FLAG, "ACT CONSOLE: " + command.toString() + "ARGS:" + arguments.toString());
         switch (command.toString().toLowerCase()){
             case "print":
-                for (ArrayList argument : arguments) {
-                    ArrayList<VariablePTC> newArg = eval.evaluate(argument);
-                    for (VariablePTC smallArg : newArg)
-                        print(smallArg); //print args as necessary.
-                }
+                print(arguments);
                 break;
             case "cls":
                 cls();
@@ -307,7 +350,7 @@ class Console implements ComponentPTC {
                     StringPTC text = (StringPTC) arguments.get(0).get(0);
                     arguments.get(0).remove(0); //remove string
                     arguments.get(0).remove(0); //remove semicolon
-                    ArrayList var = arguments.get(0); //get first element of second argument. (Should only be one element, but just in case it will ignore everything after it. Because of this, it breaks arrays.)
+                    ArrayList var = arguments.get(0); //get first element of second argument. 
                 
                     input(text, var);
                 } else {

@@ -642,14 +642,19 @@ public class VirtualDevice implements ComponentPTC{
                             } else
                                 location--;
                             break;
-                        case ";":
+                        /*NOTE: Originally, semicolon was treated as an operation
+                         *and would set some variables within the string.
+                         *Now, semicolons are handled by the called function.
+                         *Ex. PRINT, INPUT...
+                         */
+                        /*case ";":
                             //create a STRING from whatever was here, and make sure no newlines.
                             StringPTC temp = items.get(location-1).toStringPTC();
                             temp.setLine(false);
                             items.set(location, temp);
                             items.remove(location-1);
                             location--;
-                            break;
+                            break;*/
                         default:
                             location--;
                             break;
