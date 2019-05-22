@@ -102,6 +102,10 @@ class Console implements ComponentPTC {
      * @param args 
      */
     public void print(ArrayList<ArrayList> args){
+        if (args.isEmpty()){
+            newLine();
+            return;
+        }
         //Debug.print(Debug.CONSOLE_FLAG, "BEGIN PRINT BRANCH  {");
         for (int i = 0; i < args.size(); i++){ //each arg is separated by a comma ...
             ArrayList<VariablePTC> newArg = eval.evaluate(args.get(i));
@@ -319,6 +323,11 @@ class Console implements ComponentPTC {
         vars = v;
     }
     
+    public void setSystemVariables(){
+        vars.setVariable(VariablesII.SYSTEM_VARIABLES[VariablesII.CSRX], new NumberPTC(currentX));
+        vars.setVariable(VariablesII.SYSTEM_VARIABLES[VariablesII.CSRY], new NumberPTC(currentY));
+    }
+    
     /**
      * Execute an action based off of a (StringPTC format) text command.
      */
@@ -328,9 +337,11 @@ class Console implements ComponentPTC {
         switch (command.toString().toLowerCase()){
             case "print":
                 print(arguments);
+                setSystemVariables();
                 break;
             case "cls":
                 cls();
+                setSystemVariables();
                 break;
             case "locate":
                 if (arguments.size() != 2)
@@ -339,6 +350,7 @@ class Console implements ComponentPTC {
                 NumberPTC y = (NumberPTC) eval.eval(arguments.get(1));
                 
                 locate(x, y);
+                setSystemVariables();
                 break;
             case "color":
                 NumberPTC col = (NumberPTC) eval.eval(arguments.get(0));
@@ -360,6 +372,7 @@ class Console implements ComponentPTC {
                     
                     input(text, var);
                 }
+                setSystemVariables();
                 break;
             default:
                 Debug.print(Debug.ACT_FLAG, "Console ACT error: " + command.toString());

@@ -9,6 +9,8 @@ import petitcomputer.VirtualDevice.Evaluator;
  */
 public class VariablesII {
     public static final int
+            CSRX = 0,
+            CSRY = 1,
             FREEMEM = 2,
             MAINCNTL = 11,
             MAINCNTH = 12,
@@ -19,7 +21,7 @@ public class VariablesII {
     
     public static final StringPTC SYSTEM_VARIABLES[] = new StringPTC[]{
             new StringPTC("CSRX"),
-            new StringPTC("CSRX"),
+            new StringPTC("CSRY"),
             new StringPTC("FREEMEM"), //2
             new StringPTC("VERSION"),
             new StringPTC("ERR"),

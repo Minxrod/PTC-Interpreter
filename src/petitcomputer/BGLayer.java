@@ -34,6 +34,17 @@ public class BGLayer {
         tiles = new short[size][size];
     }*/
     
+    
+    public void bgput(NumberPTC x, NumberPTC y, NumberPTC tile, NumberPTC pal, NumberPTC h, NumberPTC v){
+        int tileData;
+        tileData = tile.getIntNumber();
+        tileData += pal.getIntNumber() << 12;
+        tileData += h.getIntNumber() << 10;
+        tileData += v.getIntNumber() << 11;
+        
+        bgput(x.getIntNumber(), y.getIntNumber(), tileData);
+    }
+    
     /**
      * Places a BG tile at the given location using PTC format numbers.
      * @param x

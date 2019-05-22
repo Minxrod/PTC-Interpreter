@@ -149,6 +149,7 @@ public class VirtualDevice implements ComponentPTC{
         vars.setVariable(VariablesII.SYSTEM_VARIABLES[VariablesII.MAINCNTL], new NumberPTC(maincnt));
         
         input.setSystemVariables(vars); //KEYBOARD, all touch related vars
+        //console.setSystemVariables(); //CSRX. CSRY
     }
     /**
      * Gets the image of the program at the current frame.

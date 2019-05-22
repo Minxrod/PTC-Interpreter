@@ -55,17 +55,24 @@ public class Background implements ComponentPTC{
     
     @Override
     public Errors act(StringPTC command, ArrayList<ArrayList> args) {
-        System.out.println("Background ACT branch: " + command.toString());
+        Debug.print(Debug.ACT_FLAG, "Background ACT branch: " + command.toString());
         
         NumberPTC l, x, y, x2, y2, data;
-        switch (command.toString()){
+        NumberPTC pal, v, h;
+        switch (command.toString().toLowerCase()){
             case "bgput":
                 l = (NumberPTC) eval.eval(args.get(0));
                 x = (NumberPTC) eval.eval(args.get(1));
                 y = (NumberPTC) eval.eval(args.get(2));
                 data = (NumberPTC) eval.eval(args.get(3));
-                
-                layer[bgpage][l.getIntNumber()].bgput(x, y, data);
+                if (args.size() > 4){
+                    pal = (NumberPTC) eval.eval(args.get(4));
+                    h = (NumberPTC) eval.eval(args.get(5));
+                    v = (NumberPTC) eval.eval(args.get(6));
+                    
+                    layer[bgpage][l.getIntNumber()].bgput(x, y, data, pal, h, v);
+                } else
+                    layer[bgpage][l.getIntNumber()].bgput(x, y, data);
                 break;
             case "bgfill":
                 l = (NumberPTC) eval.eval(args.get(0));
@@ -95,12 +102,12 @@ public class Background implements ComponentPTC{
             case "bgofs":
                 l = (NumberPTC) eval.eval(args.get(0));
                 x = (NumberPTC) eval.eval(args.get(1));
-                y = (NumberPTC) eval.eval(args.get(2));   
+                y = (NumberPTC) eval.eval(args.get(2));
                 
                 layer[bgpage][l.getIntNumber()].bgofs(x, y);
                 break;
             default:
-                System.out.println("Background ERROR: " + command.toString()  +" is unknown.");
+                Debug.print(Debug.ACT_FLAG, "Background ERROR: " + command.toString()  +" is unknown.");
         }
         return null;
     }
