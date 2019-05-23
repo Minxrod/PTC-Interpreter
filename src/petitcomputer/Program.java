@@ -454,7 +454,7 @@ public class Program implements ComponentPTC {
             //evaluate expression a
             NumberPTC result = (NumberPTC) eval.eval(expression);
 
-            if (result.getIntNumber() < labels.size() && result.getIntNumber() >= -1){
+            if (result.getIntNumber() < labels.size() && result.getIntNumber() > -1){
                 if (!isGosub)
                     go_to((StringPTC) labels.get(result.getIntNumber()));
                 else
