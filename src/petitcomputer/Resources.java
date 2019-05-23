@@ -12,19 +12,20 @@ public class Resources implements ComponentPTC {
     
     Files files;
     Evaluator eval;
+    VariablesII vars;
     
     BGF bgfu, bgfl;
     BGU bguu, bgul;
     BGD bgd; //only use is on bottom screen
     COL col0, col1, col2; //BG+FONT, SP, GRP
     
-    public Resources(Files f, Evaluator e){
+    public Resources(Files f, VariablesII v, Evaluator e){
         files = f;
         eval = e;
+        vars = v;
         
         col0 = new COL(false);
         col0.setData(f.loadColor(PATH + "COL0.PTC"));
-        //col0.setDefault("src/resource/COL0.PTC");
         col0.createICM();
         
         col1 = new COL(false);
@@ -33,7 +34,6 @@ public class Resources implements ComponentPTC {
         
         col2 = new COL(true);
         col2.setData(f.loadColor(PATH + "COL2.PTC"));
-        //col2.setDefault("src/resource/COL2.PTC");
         col2.createICM();
         
         bgfu = new BGF(col0);
@@ -136,6 +136,11 @@ public class Resources implements ComponentPTC {
                 } else {
                     bgfu.setData(files.loadCHRBank(name + ".PTC", false));
                 }
+                break;
+            case "mem":
+                StringPTC mem = files.readMEM(files.loadMEM(name + ".PTC"));
+                
+                vars.setVariable(VariablesII.SYSTEM_VARIABLES[VariablesII.MEM], mem);
                 break;
         }
     }

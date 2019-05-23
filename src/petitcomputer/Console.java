@@ -223,11 +223,8 @@ class Console implements ComponentPTC {
     private void printNoModifier(VariablePTC var){
         StringPTC text = var.toStringPTC();
         for (int i = 0; i < text.getLength(); i++){
-            if (text.getCharacter(i) != Char.LINEBREAK.getIndex())
-                characters[currentY][currentX] = text.getCharacter(i);
-            else
-                newLine(); //if it hits a linebreak, create a linebreak.
-
+            characters[currentY][currentX] = text.getCharacter(i);
+            
             color[currentY][currentX] = (byte) currentColor;
             //g.drawImage(font.getImage(Byte.toUnsignedInt(text.getCharacter(i)), (byte) currentColor), currentX * 8, currentY * 8, null);
             if ((currentX == CONSOLE_WIDTH - 1 && currentY == CONSOLE_HEIGHT - 1 && i == text.getLength() - 1))

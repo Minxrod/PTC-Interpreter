@@ -9,32 +9,34 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static petitcomputer.COL.convertFromPTCFormat;
-import petitcomputer.VirtualDevice.Evaluator;
 
 /**
  * File handler class. Does the initial file loading, as well as loads from within interpreted programs.
  * @author minxr
  */
-public class Files {
+public final class Files {
     public static final int HEADER_SIZE = 48;
     
-    public static final int CHRBANK_SIZE = 256;
+    public static final int CHRBANK_SIZE = 256; //# characters
     public static final int CHR_SIZE = 32; //bytes
-    public static final int COLOR_SIZE = 256;
+    public static final int COL_SIZE = 256; //# colors
     public static final int GRP_SIZE = 256*192; //width*height
-    public static final int SCR_SIZE = 0; //SCR files are odd and I don't understand them
+    public static final int SCR_SIZE = 64*64*2; //width*height*bytes
+    public static final int MEM_SIZE = 512; //bytes
+    
+    private String directory;
         
-    String directory;
-       
+    private final char[] ucs2;
+    
     public Files(){
+        directory = "src/resource/";
+        ucs2 = new char[MEM_SIZE/2];
+        byte tempUCS2[] = loadMEM("MCHRENC.PTC");
+        for (int i = 0; i < MEM_SIZE; i+=2){
+            ucs2[i/2] = (char) (tempUCS2[i] | (tempUCS2[i + 1] << 8));
+        }
     }
     
-    public void load(StringPTC name){
-        String fileName = name.toString();
-        
-        
-    }
-        
     public ArrayList<VariablePTC> initProgram(File file){
         if (!file.exists()){
             System.err.println("Your file does not exist...");
@@ -235,7 +237,7 @@ public class Files {
         
         short[][] tempBytes = new short[16][16];
         int tempCol;
-        for (int i = 0; i < COLOR_SIZE; i++){
+        for (int i = 0; i < COL_SIZE; i++){
             try {
                 //tempBytes = new byte[2];
                 tempCol = (short) ((in.read() << 8) | in.read());
@@ -260,7 +262,7 @@ public class Files {
             byte[] header = new byte[HEADER_SIZE];
             in.read(header);
             
-            byte[] tempBytes = new byte[CHRBANK_SIZE * 32];
+            byte[] tempBytes = new byte[CHRBANK_SIZE * CHR_SIZE];
             in.read(tempBytes);
 
             for (int j = 0; j < tempBytes.length; j++)
@@ -272,6 +274,54 @@ public class Files {
         } catch (IOException ex) {
         }
         return null;
+    }
+    
+    public byte[] loadMEM(String filename){
+        filename = directory + filename;
+        try {
+            File file = new File(filename);
+            if (!file.exists())
+                System.err.println("ERROR: " + file.getName() + " not found.");
+            
+            FileInputStream in;
+            in = new FileInputStream(file);
+            byte[] header = new byte[HEADER_SIZE];
+            in.read(header);
+            
+            byte[] tempBytes = new byte[MEM_SIZE + 4]; //data + length of string
+            in.read(tempBytes);
+            
+            //byte[] footer = new byte[4]; //number of bytes in string
+            //in.read(footer);
+
+            return tempBytes;
+            
+        } catch (FileNotFoundException ex) {
+        } catch (IOException ex) {
+        }
+        return null;
+    }
+    
+    /**
+     * Converts file-loaded MEM string to a usable StringPTC.
+     * @param data
+     * @return 
+     */
+    public StringPTC readMEM(byte[] data){
+        int size = data[MEM_SIZE + 0] | data[MEM_SIZE + 1] << 8; //string length
+        StringPTC mem = new StringPTC(0);
+        for (int i = 0; i < size; i++)
+            mem.add(convertUCS2toPTC((char) (data[2 * i] | (data[2 * i + 1] << 8))));
+        
+        return mem;
+    }
+    
+    private byte convertUCS2toPTC(char c){
+        for (int i = 0; i < 256; i++){
+            if (c == ucs2[i])
+                return (byte) i;
+        }
+        return -1;
     }
     
     /**

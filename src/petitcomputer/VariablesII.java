@@ -16,6 +16,7 @@ public class VariablesII {
             MAINCNTH = 12,
             TIME = 28,
             DATE = 29,
+            MEM = 30,
             TRUE = 33,
             FALSE = 34;
     

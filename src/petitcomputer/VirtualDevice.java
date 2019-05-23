@@ -81,8 +81,8 @@ public class VirtualDevice implements ComponentPTC{
         program = new Program(items);
         
         //resources used by all componenets
-        r = new Resources(files, eval);
         vars = new VariablesII(eval);
+        r = new Resources(files, vars, eval);
         
         //create and initialize many components
         data = new Data(vars, eval);
