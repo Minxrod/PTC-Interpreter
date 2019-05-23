@@ -34,6 +34,15 @@ public class StringOperations {
                 ArrayList var3 = args.get(3);
                 
                 dtread(date, var1, var2, var3);
+                break;
+            case "tmread":        
+                StringPTC time = (StringPTC) eval.eval(args.get(0));
+                var1 = args.get(1);
+                var2 = args.get(2);
+                var3 = args.get(3);
+                
+                tmread(time, var1, var2, var3);
+                break;
         }
     }
     
@@ -160,5 +169,24 @@ public class StringOperations {
         vars.setVariable(var1, new NumberPTC(y));
         vars.setVariable(var2, new NumberPTC(m));
         vars.setVariable(var3, new NumberPTC(d));
+    }
+    
+    /**
+     * Reads a time's components into multiple variables.
+     * @param time
+     * @param var1
+     * @param var2
+     * @param var3 
+     */
+    public static void tmread(StringPTC time, ArrayList var1, ArrayList var2, ArrayList var3) {
+        String c = time.toString();
+        
+        int h = Integer.parseInt(c.substring(0, 2));
+        int m = Integer.parseInt(c.substring(3, 5));
+        int s = Integer.parseInt(c.substring(6, 8));
+        
+        vars.setVariable(var1, new NumberPTC(h));
+        vars.setVariable(var2, new NumberPTC(m));
+        vars.setVariable(var3, new NumberPTC(s));
     }
 }
