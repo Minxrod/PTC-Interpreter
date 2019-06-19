@@ -2,6 +2,7 @@ package petitcomputer;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
@@ -54,6 +55,7 @@ public class MenuGUI {
             String name = e.getActionCommand();
             
             if (name.equals(LOAD_RUN)){
+                files.setCurrentDirectory(new File("../PetitComputer/programs"));
                 int c = files.showOpenDialog(frame);
                 
                 if (c == JFileChooser.APPROVE_OPTION){
