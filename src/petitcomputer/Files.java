@@ -3,8 +3,11 @@ package petitcomputer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,6 +27,24 @@ public final class Files {
     public static final int SCR_SIZE = 64*64*2; //width*height*bytes
     public static final int MEM_SIZE = 512; //bytes
     
+    private static final byte[]
+            TYPE_MEM = createType(2,"MEM"),
+            TYPE_PRG = createType(3,"PRG"),
+            TYPE_CHR = createType(1,"CHR"),
+            TYPE_COL = createType(1,"COL"),
+            TYPE_GRP = createType(1,"GRP"),
+            TYPE_SCR = createType(1,"SCR");
+    
+    private static byte[] createType(int number, String resource){
+        byte type[] = new byte[]{'P','E','T','C','0','X','0','0','R','X','X','X'};
+        type[5] = (byte)(number + '0');
+        int i = 9;
+        for (char c : resource.toCharArray())
+            type[i++] = (byte) c;
+        
+        return type;
+    }
+            
     private String directory;
         
     private final char[] ucs2;
@@ -277,11 +298,13 @@ public final class Files {
     }
     
     public byte[] loadMEM(String filename){
-        filename = directory + filename;
+        String name = directory + filename;
         try {
-            File file = new File(filename);
-            if (!file.exists())
-                System.err.println("ERROR: " + file.getName() + " not found.");
+            File file = new File(name);
+            if (!file.exists()){
+                System.out.println("ERROR: " + file.getName() + " not found.");
+                saveMEM(filename, new StringPTC(0));
+            }
             
             FileInputStream in;
             in = new FileInputStream(file);
@@ -311,9 +334,47 @@ public final class Files {
         int size = data[MEM_SIZE + 0] | data[MEM_SIZE + 1] << 8; //string length
         StringPTC mem = new StringPTC(0);
         for (int i = 0; i < size; i++)
-            mem.add(convertUCS2toPTC((char) (data[2 * i] | (data[2 * i + 1] << 8))));
+            mem.add(convertUCS2toPTC((char) (data[2 * i + 1] | (data[2 * i] << 8))));
         
         return mem;
+    }
+    
+    public void saveMEM(String filename, StringPTC mem){
+        try {
+            System.out.println(Arrays.toString(Thread.currentThread().getStackTrace()));
+            String name = directory + filename;
+            
+            File file = new File(name);
+            if (!file.exists()){
+                System.out.println("Creating file named " + filename);
+                file.createNewFile();
+            }
+            
+            FileOutputStream out;
+            out = new FileOutputStream(file);
+            
+            byte[] dat = convertMEM(mem);
+            out.write(createHeader(dat, filename.substring(0,8), TYPE_MEM));
+            out.write(dat);
+            
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Files.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Files.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private byte[] convertMEM(StringPTC mem){
+        byte[] data = new byte[MEM_SIZE+2];
+        for (int i = 0; i < mem.getLength(); i++){
+            int c = Byte.toUnsignedInt(mem.getCharacter(i));
+            System.out.println(c);
+            data[2 * i] = (byte)((ucs2[c] & 0xFF00) >>> 8);
+            data[2 * i + 1] = (byte)(ucs2[c] & 0x00FF);
+        }
+        data[MEM_SIZE]=(byte) mem.getLength();
+        data[MEM_SIZE+1]=(byte) ((mem.getLength() & 0xFF00) >>> 8);
+        return data;
     }
     
     private byte convertUCS2toPTC(char c){
@@ -322,6 +383,64 @@ public final class Files {
                 return (byte) i;
         }
         return -1;
+    }
+    
+    /**
+     * Creates a 48-byte header as would be generated in PTC.
+     * The header requires the data of the file and the filetype to generate an
+     * MD5 - so a byte array of the data must be provided.
+     * @param data - array of file data for MD5 hash
+     * @param filename - file name, all caps, no extension
+     * @param type - file type string of format PETC00#0R###.
+     * @return 
+     */
+    public byte[] createHeader(byte[] data, String filename, byte[] type){
+        final byte[] petitcom = new byte[]{'P','E','T','I','T','C','O','M'};
+        final byte[] px01 = new byte[]{'P','X','0','1'};
+        /*  HEADER INFO
+        *   bytes   data
+         *  00-03   "PX01"
+        *   04-07   length of <code>data</code> + 0x18
+         *  08-0B   0x00000000
+        *   0C-13   FILENAME
+         *  14-23   MD5 of PETITCOM, file type string, and <code>data</code>
+        *   24-2F   file type string
+        */  
+        
+        byte[] head = new byte[HEADER_SIZE];
+        
+        int i = 0;
+        for (byte b : px01)
+            head[i++] = b;
+        
+        int length = data.length + 0x00000018;
+        for (i = 0; i < 4; i++)
+            head[4 + i] = (byte) ((length & (0x000000FF << i)) >>> i); 
+        
+        i=0x0c;
+        for (char c : filename.toCharArray())
+            head[i++] = (byte) c;
+        
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            
+            md.update(petitcom);
+            md.update(data);
+            md.update(type);
+            
+            byte[] result = md.digest();
+            //System.out.println(Arrays.toString(result));
+            System.arraycopy(result, 0, head, 0x14, 16);
+            
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(Files.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        i=36;
+        for (byte b : type)
+            head[i++] = b;
+        
+        return head;
     }
     
     /**

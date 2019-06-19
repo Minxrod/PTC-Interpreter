@@ -145,8 +145,22 @@ public class Resources implements ComponentPTC {
         }
     }
     
+    public void save(String type, String name){
+        type = type.toLowerCase();
+        name = name.toUpperCase();
+        
+        switch (type.substring(0, 3)){
+            case "mem":
+                StringPTC mem = (StringPTC) vars.getVariable(VariablesII.SYSTEM_VARIABLES[VariablesII.MEM]);
+                
+                files.saveMEM(name + ".PTC", mem);
+                break;
+        }
+    }
+    
     @Override
     public Errors act(StringPTC command, ArrayList<ArrayList> args) {
+        Debug.print(Debug.ACT_FLAG, "RESOURCE act branch " + command.toString() + " args " + args.toString());
         switch (command.toString().toLowerCase()){
             case "load":
                 String resource = ((StringPTC) eval.eval(args.get(0))).toString();
@@ -161,6 +175,22 @@ public class Resources implements ComponentPTC {
                 }
                 //type and name are set. Now load using given type + name
                 load(type, name);
+                break; 
+                /*MY FILES WERE BEING SAVED WITH JUNK BECAUSE THIS WAS RUNNING 
+                THROUGH TO THE SAVE FUNCTION WITHOUT PROPERLY CHECKING ANYTHING?
+                REALLY? AAAAAAAAAAAAAAAAAAAAAAA
+                */
+            case "save":
+                resource = ((StringPTC) eval.eval(args.get(0))).toString();
+                if (resource.contains(":")){
+                    type = resource.substring(0, resource.indexOf(":")); //TYPE:FILENAME -> TYPE
+                    name = resource.substring(resource.indexOf(":")+1, resource.length()); // TYPE:FILENAME -> FILENAME
+                } else {
+                    type = "prg";
+                    name = resource;
+                }
+                //type and name are set. Now load using given type + name
+                save(type, name);                
                 break;
         }
         return null;
