@@ -101,6 +101,8 @@ public class VirtualDevice implements ComponentPTC{
         
         graphics = new Graphic(r.getCOL2(), eval);
         
+        sprites = new Sprites(r.getSPU(), r.getCOL1(), eval);
+        
         sound = new Sound(eval);
         
         //sprites = new Sprites(r.getSPU(), r.getCOL1(), eval);
@@ -175,7 +177,9 @@ public class VirtualDevice implements ComponentPTC{
             g.drawImage(bg.createImage(0), 0, 0, null);
         if (visible[V_CONSOLE])
             g.drawImage(console.createImage(), 0, 0, null);
-        
+        if (visible[V_SPRITE])
+            sprites.drawImage(g, 0, true);
+            
         return image;
     }
     private Image getBottomImage(){
@@ -185,7 +189,7 @@ public class VirtualDevice implements ComponentPTC{
         //panel!
         if (visible[V_GRAPHIC])
             g.drawImage(graphics.createImage(1), 0, 0, null);
-        if (visible[V_BG1])
+        if (visible[V_BG0])
             g.drawImage(bg.createImage(1), 0, 0, null);
         if (visible[V_PANEL])
             g.drawImage(panel.createImage(), 0, 0, null);
@@ -232,6 +236,9 @@ public class VirtualDevice implements ComponentPTC{
             case GROUP_PROCESS:
                 this.localAct(command, args);
                 break;
+            case GROUP_SPRITE:
+                sprites.act(command, args);
+                break;
         }
         
         return null;
@@ -258,8 +265,11 @@ public class VirtualDevice implements ComponentPTC{
                 return input.func(function, args);
             case GROUP_STRING:
                 return StringOperations.func(function, args);
+            case GROUP_SPRITE:
+                return sprites.func(function, args);
             default:
                 return new NumberPTC(1336.5);
+
         }
         
         return null;

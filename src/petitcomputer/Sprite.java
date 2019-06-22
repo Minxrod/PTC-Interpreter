@@ -7,6 +7,7 @@ package petitcomputer;
 
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 /**
  * An individual sprite object and it's data.
@@ -22,7 +23,7 @@ class Sprite {
     int priority;
     int homeX, homeY;
     NumberPTC[] vars;
-    Image image;
+    BufferedImage image;
     
     /**
      * Creates a sprite object from the given parameters, including the size..
@@ -80,9 +81,18 @@ class Sprite {
         chr = c;
     }
     
-    //public createImage()
+    public Image createImage(CharsetPTC charset){
+        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics g = image.createGraphics();
+        for (int chrY = 0; chrY < height/8; chrY++)
+            for (int chrX = 0; chrX < width/8; chrX++)
+                g.drawImage(charset.getImage(4 * chr + chrX + width / 8 * chrY, (byte)pal), 8 * chrX, 8 * chrY, null);
+        
+        return image;
+    }
     
     public void draw(Graphics g){
-        g.drawImage(image, x - homeX, y - homeY, null);
+        if (image != null)
+            g.drawImage(image, x - homeX, y - homeY, null);
     }
 }

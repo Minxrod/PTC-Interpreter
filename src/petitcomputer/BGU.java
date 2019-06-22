@@ -36,13 +36,12 @@ public class BGU implements CharsetPTC {
      */
     @Override
     public Image getImage(int index, byte palette){
-        return bgu[index / 256].getImage(index, palette);
+        return bgu[index / 256].getImage(index % 256, palette);
     }
     
     /**
      * Loads the default character set into the character banks.
      */
-    @Override
     public void setDefault(){
         //bgu[0].loadFromFile("src/resource/BGU0.PTC");
         //bgu[1].loadFromFile("src/resource/BGU1.PTC");

@@ -17,6 +17,9 @@ public class Resources implements ComponentPTC {
     BGF bgfu, bgfl;
     BGU bguu, bgul;
     BGD bgd; //only use is on bottom screen
+    
+    SPU spu;
+    
     COL col0, col1, col2; //BG+FONT, SP, GRP
     
     public Resources(Files f, VariablesII v, Evaluator e){
@@ -56,6 +59,11 @@ public class Resources implements ComponentPTC {
         bgd.setData(0, f.loadCHRBank(PATH + "BGD0.PTC", true));
         bgd.setData(1, f.loadCHRBank(PATH + "BGD1.PTC", true));
         //bgd.setDefault();
+        
+        spu = new SPU(col1);
+        for (int i = 0; i < 8; i++)
+            spu.setData(i, f.loadCHRBank(PATH + "SPU"+i+".PTC", true));
+        
     }
     
     /**
@@ -82,8 +90,16 @@ public class Resources implements ComponentPTC {
         return bgd;
     }
     
+    public SPU getSPU(){
+        return spu;
+    }
+    
     public COL getCOL0(){
         return col0;
+    }
+    
+    public COL getCOL1(){
+        return col1;
     }
     
     public COL getCOL2(){

@@ -11,5 +11,5 @@ public interface CharsetPTC {
     public Image getImage(int index, byte palette);
     public CHR getCharacter(int index);
     //public Image getChrImage(int index, byte palette);
-    public void setDefault();
+    //public void setDefault();
 }

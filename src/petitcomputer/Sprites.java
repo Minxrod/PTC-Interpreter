@@ -46,12 +46,31 @@ public class Sprites implements ComponentPTC {
                 break;
             case "spset":
                 //get args
-                
-                
-                
+                int spriteID = ((NumberPTC)eval.eval(args.get(0))).getIntNumber();
+                NumberPTC cc = (NumberPTC) eval.eval(args.get(1));
+                NumberPTC pal = (NumberPTC) eval.eval(args.get(2));
+                NumberPTC hr = (NumberPTC) eval.eval(args.get(3));
+                NumberPTC vr = (NumberPTC) eval.eval(args.get(4));
+                NumberPTC oop = (NumberPTC) eval.eval(args.get(5));
                 
                 //create new sprite object
+                sprites[page * 100 + spriteID] = new Sprite(cc.getIntNumber(), pal.getIntNumber(), hr.getIntNumber(), vr.getIntNumber(), oop.getIntNumber());
+                sprites[page * 100 + spriteID].createImage(chr);
+                break;
+            case "spclr":
+                if (args.isEmpty())
+                    sprites = new Sprite[200];
+                else {
+                    spriteID = ((NumberPTC)eval.eval(args.get(0))).getIntNumber();
+                    sprites[page * 100 + spriteID] = null;
+                }
+                break;
+            case "spofs":
+                spriteID = ((NumberPTC)eval.eval(args.get(0))).getIntNumber();
+                NumberPTC x = (NumberPTC) eval.eval(args.get(1));
+                NumberPTC y = (NumberPTC) eval.eval(args.get(2));
                 
+                sprites[page * 100 + spriteID].spofs(x.getIntNumber(), y.getIntNumber());
                 break;
             default:
                 Debug.print(Debug.ACT_FLAG, "ACT ERROR: " + command);

@@ -41,7 +41,6 @@ public class BGF implements CharsetPTC{
     /**
      * Attempts to read the default font from a file.
      */
-    @Override
     public void setDefault(){
         //characters.loadFromFile("src/resource/BGF0.PTC");
     }
