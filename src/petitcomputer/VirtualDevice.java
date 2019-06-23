@@ -178,7 +178,7 @@ public class VirtualDevice implements ComponentPTC{
         if (visible[V_CONSOLE])
             g.drawImage(console.createImage(), 0, 0, null);
         if (visible[V_SPRITE])
-            sprites.drawImage(g, 0, true);
+            sprites.drawImage(g, 0, 0);
             
         return image;
     }

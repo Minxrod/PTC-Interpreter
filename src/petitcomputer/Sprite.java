@@ -16,13 +16,27 @@ import java.awt.image.BufferedImage;
  * @author minxr
  */
 class Sprite {
-    int x, y;
     int width, height;
+    final int chrSize;
     int chr, pal;
     int horiz, vert;
     int priority;
+    
     int homeX, homeY;
+    
+    double x, y;
+    double moveX, moveY; int moveTime;
+    int frame, animFrames, animTime, animLoop;
+    double angle, angleStep; int angleTime;
+    int scale, scaleStep, scaleTime;
+    
+    int hitboxX, hitboxY, hitboxW, hitboxH;
+    int hitboxDX, hitboxDY; //displacement xy. I really don't know how this works.
+    boolean scaleAdjustment;
+    int hitboxMask;
+    
     NumberPTC[] vars;
+    
     BufferedImage image;
     
     /**
@@ -47,6 +61,9 @@ class Sprite {
         priority = o;
         homeX = 0;
         homeY = 0;
+        
+        chrSize = w * h / 64;
+        vars = new NumberPTC[8];
     }
     
     /**
@@ -70,11 +87,31 @@ class Sprite {
         priority = o;
         homeX = 0;
         homeY = 0;
+        
+        chrSize = 4;
+        vars = new NumberPTC[8];
     }
     
-    public void spofs(int newX, int newY){
+    /**
+     * Update sprite as if one frame had passed. Used for interpolation.
+     */
+    public void update(){
+        if (moveTime > 0){
+           x += moveX;
+           y += moveY;
+           moveTime--;
+        }
+    }
+    
+    public void spofs(double newX, double newY){
         x = newX;
         y = newY;
+    }
+    
+    public void spofs(double newX, double newY, int time){
+        moveX = (newX - x) / time;
+        moveY = (newY - y) / time;
+        moveTime = time;
     }
     
     public void spchr(int c){
@@ -92,7 +129,9 @@ class Sprite {
     }
     
     public void draw(Graphics g){
-        if (image != null)
-            g.drawImage(image, x - homeX, y - homeY, null);
+        if (image != null){
+            //to add: rotation, scale, clip(200range)
+            g.drawImage(image, (int) x - homeX, (int) y - homeY, null);
+        }
     }
 }

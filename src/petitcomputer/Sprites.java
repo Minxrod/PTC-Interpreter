@@ -17,7 +17,7 @@ public class Sprites implements ComponentPTC {
     CharsetPTC chr;
     
     int page;
-    Sprite[] sprites;
+    Sprite[][] sprites;
 
     /**
      * Creates a sprite manager, initialized with a character set and palette.
@@ -32,7 +32,7 @@ public class Sprites implements ComponentPTC {
         
         page = 0;
         
-        sprites = new Sprite[200];
+        sprites = new Sprite[2][100];
     }
     
     @Override
@@ -54,23 +54,35 @@ public class Sprites implements ComponentPTC {
                 NumberPTC oop = (NumberPTC) eval.eval(args.get(5));
                 
                 //create new sprite object
-                sprites[page * 100 + spriteID] = new Sprite(cc.getIntNumber(), pal.getIntNumber(), hr.getIntNumber(), vr.getIntNumber(), oop.getIntNumber());
-                sprites[page * 100 + spriteID].createImage(chr);
+                sprites[page][spriteID] = new Sprite(cc.getIntNumber(), pal.getIntNumber(), hr.getIntNumber(), vr.getIntNumber(), oop.getIntNumber());
+                sprites[page][spriteID].createImage(chr);
                 break;
             case "spclr":
                 if (args.isEmpty())
-                    sprites = new Sprite[200];
+                    sprites = new Sprite[2][100];
                 else {
                     spriteID = ((NumberPTC)eval.eval(args.get(0))).getIntNumber();
-                    sprites[page * 100 + spriteID] = null;
+                    sprites[page][spriteID] = null;
                 }
                 break;
             case "spofs":
                 spriteID = ((NumberPTC)eval.eval(args.get(0))).getIntNumber();
                 NumberPTC x = (NumberPTC) eval.eval(args.get(1));
                 NumberPTC y = (NumberPTC) eval.eval(args.get(2));
+                if (args.size() == 4){
+                    NumberPTC time = (NumberPTC) eval.eval(args.get(3));
+                    
+                    sprites[page][spriteID].spofs(x.getDoubleNumber(), y.getDoubleNumber(), time.getIntNumber());
+                } else {
+                    sprites[page][spriteID].spofs(x.getDoubleNumber(), y.getDoubleNumber());
+                }
+                break;
+            case "spchr":
+                spriteID = ((NumberPTC)eval.eval(args.get(0))).getIntNumber();
+                cc = (NumberPTC) eval.eval(args.get(1));
                 
-                sprites[page * 100 + spriteID].spofs(x.getIntNumber(), y.getIntNumber());
+                sprites[page][spriteID].spchr(cc.getIntNumber());
+                sprites[page][spriteID].createImage(chr);
                 break;
             default:
                 Debug.print(Debug.ACT_FLAG, "ACT ERROR: " + command);
@@ -89,16 +101,25 @@ public class Sprites implements ComponentPTC {
     }
     
     /**
+     * Update all sprites by one frame.
+     */
+    public void updateSprites(){
+        for (Sprite[] sprs : sprites)
+            for (Sprite sp : sprs)
+                sp.update();
+    }
+    
+    /**
      * Draws active sprites to the graphics object given.
      * Will only draw sprites on the given screen and priority layer.
      * @param g - image to draw to
      * @param prio - priority of draw
-     * @param upper - upper screen if true, lower if false
+     * @param page - upper screen if 0, lower if 1
      */
-    public void drawImage(Graphics g, int prio, boolean upper){
+    public void drawImage(Graphics g, int prio, int page){
         for (int i = 99; i >= 0; i--){
             if (sprites[i] != null){
-                sprites[i].draw(g);
+                sprites[page][i].draw(g);
             }
         }
     }
