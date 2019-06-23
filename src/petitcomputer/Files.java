@@ -242,7 +242,6 @@ public final class Files {
         try {
             in = new FileInputStream(defaultColorFile);
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(BGF.class.getName()).log(Level.SEVERE, null, ex);
         }
         if (!defaultColorFile.exists())
             System.err.println("Oh fricc you messed up...");
@@ -253,7 +252,6 @@ public final class Files {
             //System.out.println(i);
             in.read(header);
         } catch (IOException ex) {
-            Logger.getLogger(BGF.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         short[][] tempBytes = new short[16][16];

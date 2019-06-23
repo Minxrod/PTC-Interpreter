@@ -10,18 +10,34 @@ import petitcomputer.VirtualDevice.Evaluator;
 public class Resources implements ComponentPTC {
     public static final String PATH = "src/resource/";
     
+    private static final int
+            BGU_BANKS = 4,
+            BGF_BANKS = 1,
+            BGD_BANKS = 2,
+            SPU_BANKS = 8,
+            SPS_BANKS = 2,
+            SPD_BANKS = 4;
+    
     Files files;
     Evaluator eval;
     VariablesII vars;
     
-    BGF bgfu, bgfl;
-    BGU bguu, bgul;
-    BGD bgd; //only use is on bottom screen
+    CharsetPTC bgfu, bgfl;
+    CharsetPTC bguu, bgul;
+    CharsetPTC bgd; //only use is on bottom screen
     
-    SPU spu;
+    CharsetPTC spu;
     
     COL col0, col1, col2; //BG+FONT, SP, GRP
     
+    /**
+     * Creates a Resources object. This will initialize all character and color
+     * based resources for PTC, which can be accessed by their corresponding
+     * methods.
+     * @param f
+     * @param v
+     * @param e 
+     */
     public Resources(Files f, VariablesII v, Evaluator e){
         files = f;
         eval = e;
@@ -39,28 +55,21 @@ public class Resources implements ComponentPTC {
         col2.setData(f.loadColor(PATH + "COL2.PTC"));
         col2.createICM();
         
-        bgfu = new BGF(col0);
-        bgfu.setData(f.loadCHRBank(PATH + "BGF0.PTC", true));
-        //bgfu.setDefault();
+        bgfu = new CharsetPTC(col0, BGF_BANKS);
+        bgfu.setData(0, f.loadCHRBank(PATH + "BGF0.PTC", true));
         
-        bgfl = new BGF(col0);
-        bgfl.setData(f.loadCHRBank(PATH + "BGF0.PTC", true));
-        //bgfl.setDefault();
+        bgfl = new CharsetPTC(col0, BGF_BANKS);
+        bgfl.setData(0, f.loadCHRBank(PATH + "BGF0.PTC", true));
         
-        bguu = new BGU(col0);
+        bguu = new CharsetPTC(col0, BGU_BANKS);
+        for (int i = 0; i < BGU_BANKS; i++)
+            bguu.setData(i, f.loadCHRBank(PATH + "BGU"+i+".PTC", true));
         
-        bguu.setData(0, f.loadCHRBank(PATH + "BGU0.PTC", true));
-        bguu.setData(1, f.loadCHRBank(PATH + "BGU1.PTC", true));
-        bguu.setData(2, f.loadCHRBank(PATH + "BGU2.PTC", true));
-        bguu.setData(3, f.loadCHRBank(PATH + "BGU3.PTC", true));
-        //bguu.setDefault();
+        bgd = new CharsetPTC(col0, BGD_BANKS);
+        for (int i = 0; i < BGD_BANKS; i++)
+            bgd.setData(i, f.loadCHRBank(PATH + "BGD"+i+".PTC", true));
         
-        bgd = new BGD(col0);
-        bgd.setData(0, f.loadCHRBank(PATH + "BGD0.PTC", true));
-        bgd.setData(1, f.loadCHRBank(PATH + "BGD1.PTC", true));
-        //bgd.setDefault();
-        
-        spu = new SPU(col1);
+        spu = new CharsetPTC(col1, SPU_BANKS);
         for (int i = 0; i < 8; i++)
             spu.setData(i, f.loadCHRBank(PATH + "SPU"+i+".PTC", true));
         
@@ -70,27 +79,27 @@ public class Resources implements ComponentPTC {
      * Returns the upper screen font character data.
      * @return 
      */
-    public BGF getBGFU(){
+    public CharsetPTC getBGFU(){
         return bgfu;
     }
     
-    public BGF getBGFL(){
+    public CharsetPTC getBGFL(){
         return bgfl;
     }
     
-    public BGU getBGUU(){
+    public CharsetPTC getBGUU(){
         return bguu;
     }
     
-    public BGU getBGUL(){
+    public CharsetPTC getBGUL(){
         return bgul;
     }
     
-    public BGD getBGD(){
+    public CharsetPTC getBGD(){
         return bgd;
     }
     
-    public SPU getSPU(){
+    public CharsetPTC getSPU(){
         return spu;
     }
     
@@ -117,9 +126,9 @@ public class Resources implements ComponentPTC {
         switch (rString.substring(0, 3)){
             case "bgf":
                 if (isLower(rString)) //check if lower screen data
-                    bgfl.setData(data);
+                    bgfl.setData(0, data);
                 else //default to upper
-                    bgfu.setData(data);
+                    bgfu.setData(0, data);
                 break;
         }
     }
@@ -148,9 +157,9 @@ public class Resources implements ComponentPTC {
                 break;
             case "bgf":
                 if (type.endsWith("l")){
-                    bgfl.setData(files.loadCHRBank(name + ".PTC", false));
+                    bgfl.setData(0, files.loadCHRBank(name + ".PTC", false));
                 } else {
-                    bgfu.setData(files.loadCHRBank(name + ".PTC", false));
+                    bgfu.setData(0, files.loadCHRBank(name + ".PTC", false));
                 }
                 break;
             case "mem":

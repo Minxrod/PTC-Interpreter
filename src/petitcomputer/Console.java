@@ -21,7 +21,7 @@ class Console implements ComponentPTC {
     final int CONSOLE_WIDTH = 32;
     final int CONSOLE_HEIGHT = 24;
     
-    BGF font;
+    CharsetPTC font;
     COL colors;
     
     //BufferedImage image;
@@ -31,7 +31,7 @@ class Console implements ComponentPTC {
     int currentX, currentY;
     int currentColor;
     
-    public Console(BGF fontSet, COL colorSet, Evaluator ev){
+    public Console(CharsetPTC fontSet, COL colorSet, Evaluator ev){
         eval = ev;
         font = fontSet;
         colors = colorSet;

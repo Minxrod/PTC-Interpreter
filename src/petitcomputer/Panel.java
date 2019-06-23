@@ -17,7 +17,7 @@ public class Panel implements ComponentPTC {
     StringPTC pnltype;
     //some BG element
     
-    public Panel(BGF bgf, COL col, BGD bgd, Evaluator ev){
+    public Panel(CharsetPTC bgf, COL col, CharsetPTC bgd, Evaluator ev){
         eval = ev;
         console = new Console(bgf, col, ev);
         back = new BGLayer(bgd, col);

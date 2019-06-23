@@ -95,7 +95,6 @@ public class COL {
         try {
             in = new FileInputStream(defaultColorFile);
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(BGF.class.getName()).log(Level.SEVERE, null, ex);
         }
         if (!defaultColorFile.exists())
             System.err.println("Oh fricc you messed up...");
@@ -106,7 +105,6 @@ public class COL {
             //System.out.println(i);
             in.read(header);
         } catch (IOException ex) {
-            Logger.getLogger(BGF.class.getName()).log(Level.SEVERE, null, ex);
         }
         //}
         //System.out.println(Arrays.toString(header));

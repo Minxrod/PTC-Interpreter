@@ -11,7 +11,7 @@ import petitcomputer.VirtualDevice.Evaluator;
  * @author minxr
  */
 public class Background implements ComponentPTC{
-    BGU bgu;
+    CharsetPTC bgu;
     COL colors;
     BGLayer[][] layer;
     Evaluator eval;
@@ -24,7 +24,7 @@ public class Background implements ComponentPTC{
      * @param col - color palette object
      * @param ev - evaluator
      */
-    public Background(BGU bg, COL col, Evaluator ev){
+    public Background(CharsetPTC bg, COL col, Evaluator ev){
         bgu = bg;
         colors = col;
         eval = ev;
