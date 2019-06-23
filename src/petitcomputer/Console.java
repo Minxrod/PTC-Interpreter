@@ -28,8 +28,9 @@ class Console implements ComponentPTC {
     //Graphics g;
     byte[][] characters;
     byte[][] color;
+    byte[][] bgcolor;
     int currentX, currentY;
-    int currentColor;
+    int currentColor, currentBG;
     
     public Console(CharsetPTC fontSet, COL colorSet, Evaluator ev){
         eval = ev;
@@ -38,6 +39,7 @@ class Console implements ComponentPTC {
         
         characters = new byte[CONSOLE_HEIGHT][CONSOLE_WIDTH];
         color = new byte[CONSOLE_HEIGHT][CONSOLE_WIDTH];
+        bgcolor = new byte[CONSOLE_HEIGHT][CONSOLE_WIDTH];
         
         //image = new BufferedImage(PetitComGUI.WINDOW_WIDTH, PetitComGUI.WINDOW_HEIGHT, BufferedImage.TYPE_BYTE_INDEXED, colors.getICM256());
         //g = image.createGraphics();
@@ -46,12 +48,14 @@ class Console implements ComponentPTC {
             for (int x = 0; x < CONSOLE_WIDTH; x++){
                 characters[y][x] = 0;
                 color[y][x] = 0;
+                bgcolor[y][x] = 0;
             }
         }
         
         currentX = 0;
         currentY = 0;
         currentColor = 0;
+        currentBG = 0;
     }
     
     public void setIn(Input input){
@@ -97,6 +101,14 @@ class Console implements ComponentPTC {
         currentColor = color;
     }
     
+    public void color(NumberPTC color, NumberPTC bgcolor){
+        color((byte)color.getIntNumber(), (byte)bgcolor.getIntNumber());
+    }
+    
+    public void color(byte color, byte bgcolor){
+        currentColor = color;
+        currentBG = bgcolor;
+    }
     /**
      * Prints the given arguments to the emulated console.
      * @param args 
@@ -351,7 +363,11 @@ class Console implements ComponentPTC {
                 break;
             case "color":
                 NumberPTC col = (NumberPTC) eval.eval(arguments.get(0));
-                color(col);
+                if (arguments.size() == 2) {
+                    NumberPTC bgcol = (NumberPTC) eval.eval(arguments.get(1));
+                    color(col, bgcol);
+                } else
+                    color(col);
                 break;
             case "input":
                 if (arguments.get(0).size() > 1){
@@ -383,7 +399,7 @@ class Console implements ComponentPTC {
     @Override
     public VariablePTC func(StringPTC function, ArrayList<VariablePTC> args){
         switch (function.toString().toLowerCase()){
-            case "chkchr$":
+            case "chkchr":
                 NumberPTC x = (NumberPTC) args.get(0);
                 NumberPTC y = (NumberPTC) args.get(1);
                 
@@ -406,6 +422,11 @@ class Console implements ComponentPTC {
             for (int x = 0; x < CONSOLE_WIDTH; x++){
                 //System.out.println(characters[x][y]);
                 int character = Byte.toUnsignedInt(characters[y][x]);
+                int col = bgcolor[y][x];
+                if (col != 0){ //draw bg color
+                    drawToImage.setColor(colors.getColor(col * 16 + 15));
+                    drawToImage.fillRect(8 * x,8 * y,8 * x + 7, 8 * y + 7);
+                }
                 drawToImage.drawImage(font.getImage(character, color[y][x]), 8 * x, 8 * y, null);
             }
         }

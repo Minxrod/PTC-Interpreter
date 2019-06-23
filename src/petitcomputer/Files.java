@@ -114,7 +114,7 @@ public final class Files {
                 item = new StringPTC(0);
                 character = program[position];
                 //check character type
-                if (CharacterPTC.isLetter(character)){
+                if (CharacterPTC.isLetter(character) || CharacterPTC.UNDERSCORE == character){
                     do {
                         //add char
                         item.add(character);
@@ -122,7 +122,8 @@ public final class Files {
                         //get next char
                         position++;
                         character = program[position];
-                    } while (CharacterPTC.isLetter(character) || CharacterPTC.isNumber(character) || (character == CharacterPTC.DOLLAR));    
+                    } while (CharacterPTC.isLetter(character) || CharacterPTC.isNumber(character)
+                            || character == CharacterPTC.DOLLAR || character == CharacterPTC.UNDERSCORE);    
                     int type = VariablePTC.STRING_REFERENCE;
 
                     if (isCommand(item))
@@ -184,7 +185,7 @@ public final class Files {
                             //get next char
                             position++;
                             character = program[position];
-                        } while (CharacterPTC.isLetter(character) || CharacterPTC.isNumber(character));    
+                        } while (CharacterPTC.isLetter(character) || CharacterPTC.isNumber(character) || CharacterPTC.UNDERSCORE == character);    
                         item.setType(VariablePTC.STRING_LABEL);
                         items.add(item);
                     } else if (CharacterPTC.isContainer(character)) { 

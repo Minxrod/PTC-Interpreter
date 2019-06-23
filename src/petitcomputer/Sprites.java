@@ -118,7 +118,7 @@ public class Sprites implements ComponentPTC {
      */
     public void drawImage(Graphics g, int prio, int page){
         for (int i = 99; i >= 0; i--){
-            if (sprites[i] != null){
+            if (sprites[page][i] != null){
                 sprites[page][i].draw(g);
             }
         }

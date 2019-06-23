@@ -149,7 +149,7 @@ public class StringOperations {
      * @return 
      */
     public static NumberPTC asc(StringPTC s){
-        return new NumberPTC(s.getCharacter(0));
+        return new NumberPTC(Byte.toUnsignedInt(s.getCharacter(0)));
     }
 
     /**
