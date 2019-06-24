@@ -34,7 +34,7 @@ public class CHR {
      * @return 
      */
     public BufferedImage createImage(){
-        image = new BufferedImage(8, 8, BufferedImage.TYPE_BYTE_INDEXED, COL.getDefaultModel());
+        image = new BufferedImage(8, 8, BufferedImage.TYPE_BYTE_INDEXED, COL.getDefaultModel16());
         
         for (int y = 0; y < 8; y++){
             for(int x = 0; x < 4; x++){

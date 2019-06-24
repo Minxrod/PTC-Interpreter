@@ -135,7 +135,7 @@ public final class Files {
 
                     item.setType(type);
                     items.add(item);
-                } else if (CharacterPTC.isNumber(character)){
+                } else if (CharacterPTC.isNumber(character) || CharacterPTC.PERIOD == character){
                     do {
                         //add char
                         item.add(character);
@@ -143,7 +143,7 @@ public final class Files {
                         //get next char
                         position++;
                         character = program[position];
-                    } while (CharacterPTC.isNumber(character));
+                    } while (CharacterPTC.isNumber(character) || CharacterPTC.PERIOD == character);
                     item.setType(VariablePTC.STRING_EXPRESSION); //pretty much useless
                     NumberPTC num = item.getNumberFromString();
                     num.setType(VariablePTC.NUMBER_LITERAL);

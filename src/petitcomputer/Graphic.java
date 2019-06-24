@@ -129,6 +129,20 @@ public class Graphic implements ComponentPTC {
                     layer[drawLayer[gpage]].gbox(x.getIntNumber(), y.getIntNumber(), x2.getIntNumber(), y2.getIntNumber());
                 }
                 break;
+            case "gcircle":
+                x = (NumberPTC) eval.eval(args.get(0));
+                y = (NumberPTC) eval.eval(args.get(1));
+                x2 = (NumberPTC) eval.eval(args.get(2));
+                if (args.size() > 3){
+                    c = (NumberPTC) eval.eval(args.get(3));
+                
+                    layer[drawLayer[gpage]].gcircle(x.getIntNumber(), y.getIntNumber(), x2.getIntNumber(), c.getIntNumber());
+                } else
+                    layer[drawLayer[gpage]].gcircle(x.getIntNumber(), y.getIntNumber(), x2.getIntNumber());
+                break;
+            case "gcopy":
+                
+                break;
             default:
                 Debug.print(Debug.ACT_FLAG, "GRAPHIC branch ERROR: " + command.toString());
                 
@@ -138,6 +152,14 @@ public class Graphic implements ComponentPTC {
 
     @Override
     public VariablePTC func(StringPTC function, ArrayList<VariablePTC> args) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Debug.print(Debug.ACT_FLAG, "FUNCTION branch GRAPHIC: " + function.toString() + "ARGS: "+ args.toString());
+        switch (function.toString().toLowerCase()){
+            case "gspoit":
+                NumberPTC x = (NumberPTC) args.get(0);
+                NumberPTC y = (NumberPTC) args.get(0);
+                
+                return layer[drawLayer[gpage]].gspoit(x.getIntNumber(), y.getIntNumber());
+        }
+        return null;
     }
 }

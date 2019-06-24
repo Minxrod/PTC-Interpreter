@@ -16,35 +16,44 @@ public class COL {
                             PALETTE_SIZE_LARGE = 256,
                             PALETTE_COUNT = 16;
     
-    private static final IndexColorModel INDEX_TO_COLOR_ADAPTER = createDefaultModel();
+    private static final IndexColorModel INDEX_TO_COLOR_ADAPTER16 = createDefaultModel(PALETTE_SIZE_SMALL);
+    private static final IndexColorModel INDEX_TO_COLOR_ADAPTER256 = createDefaultModel(PALETTE_SIZE_LARGE);
     
     private IndexColorModel icm256;
     private IndexColorModel[] icm16;
     short[][] colors; //RGB555 format
     boolean cm; //color mode
     
-    private static IndexColorModel createDefaultModel(){
+    private static IndexColorModel createDefaultModel(int paletteSize){
         IndexColorModel icmdef;
         byte r[], g[], b[];
-        r = new byte[PALETTE_SIZE_SMALL];
-        g = new byte[PALETTE_SIZE_SMALL];
-        b = new byte[PALETTE_SIZE_SMALL];
-        for (int i = 0; i < PALETTE_SIZE_SMALL; i++){
-            r[i] = (byte)(16 * i);
+        r = new byte[paletteSize];
+        g = new byte[paletteSize];
+        b = new byte[paletteSize];
+        for (int i = 0; i < paletteSize; i++){
+            r[i] = (byte)(i);
             g[i] = 0;
             b[i] = 0;
         }
-        icmdef = new IndexColorModel(4, PALETTE_SIZE_SMALL, r, g, b);
+        icmdef = new IndexColorModel(4, paletteSize, r, g, b);
         return icmdef;
     }
     
-    public static IndexColorModel getDefaultModel(){
-        return INDEX_TO_COLOR_ADAPTER;
+    public static IndexColorModel getDefaultModel16(){
+        return INDEX_TO_COLOR_ADAPTER16;
+    }
+
+    public static IndexColorModel getDefaultModel256(){
+        return INDEX_TO_COLOR_ADAPTER256;
     }
     
     public static int getDefaultRGBFromIndex(int index){
-        return new Color(index * 16, 0, 0).getRGB();
+        return new Color(index, 0, 0).getRGB();
     }
+    public static Color getDefaultColorFromIndex(int index){
+        return new Color(index, 0, 0);
+    }
+    
     
     /**
      * Creates a new color object. Data must be set using setData.

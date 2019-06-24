@@ -267,6 +267,8 @@ public class VirtualDevice implements ComponentPTC{
                 return StringOperations.func(function, args);
             case GROUP_SPRITE:
                 return sprites.func(function, args);
+            case GROUP_GRAPHICS:
+                return graphics.func(function, args);
             default:
                 return new NumberPTC(1336.5);
 
@@ -373,6 +375,12 @@ public class VirtualDevice implements ComponentPTC{
             case "gfill":
             case "gbox":
             case "gspoit":
+            case "gcircle":
+            case "gpaint":
+            case "gprio":
+            case "gdrawmd":
+            case "gcopy":
+            case "gputchr":
                 group = GROUP_GRAPHICS;
                 break;
             case "spset":
