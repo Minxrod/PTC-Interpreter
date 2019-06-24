@@ -152,7 +152,7 @@ public final class Files {
                     if (character == CharacterPTC.QUOTE){
                         position++;
                         character = program[position];
-                        while (character != CharacterPTC.QUOTE) {
+                        while (character != CharacterPTC.QUOTE && character != CharacterPTC.LINEBREAK) {
                             //add char
                             item.add(character);
 
@@ -234,6 +234,9 @@ public final class Files {
         } catch (Exception e){
             System.err.println(e.getMessage() + Arrays.toString(e.getStackTrace()));
         }
+        
+        //for (VariablePTC i : items)
+        //    Debug.print(Debug.FILES_FLAG, i.toString());
         return items;
     }
     
