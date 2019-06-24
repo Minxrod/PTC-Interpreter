@@ -106,7 +106,8 @@ public class Sprites implements ComponentPTC {
     public void updateSprites(){
         for (Sprite[] sprs : sprites)
             for (Sprite sp : sprs)
-                sp.update();
+                if (sp.update())
+                    sp.createImage(chr);
     }
     
     /**

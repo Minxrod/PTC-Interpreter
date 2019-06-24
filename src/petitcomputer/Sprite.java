@@ -26,7 +26,7 @@ class Sprite {
     
     double x, y;
     double moveX, moveY; int moveTime;
-    int frame, animFrames, animTime, animLoop;
+    int frame, animTime, animFrames, animMaxTime, animLoop;
     double angle, angleStep; int angleTime;
     int scale, scaleStep, scaleTime;
     
@@ -64,6 +64,8 @@ class Sprite {
         
         chrSize = w * h / 64;
         vars = new NumberPTC[8];
+        
+        animFrames = 1;
     }
     
     /**
@@ -90,17 +92,40 @@ class Sprite {
         
         chrSize = 4;
         vars = new NumberPTC[8];
+        animFrames = 1;
+        
     }
     
     /**
      * Update sprite as if one frame had passed. Used for interpolation.
      */
-    public void update(){
+    public boolean update(){
+        boolean needsUpdate = false;
+        
         if (moveTime > 0){
            x += moveX;
            y += moveY;
            moveTime--;
         }
+        //frame, animFrames, animTime, animLoop
+        
+        if (animFrames > 1){
+            animTime--;
+            if (animTime == 0){ //1 frame end
+                animTime = animMaxTime;
+                
+                needsUpdate = true;
+                frame++;
+                if (frame == animFrames){ //loop complete
+                    frame--; //stops on last frame
+                    animLoop--;
+                    if (animLoop == 0) //all loops complete
+                        animFrames = 1;
+                }
+            }
+        }
+        
+        return needsUpdate;
     }
     
     public void spofs(double newX, double newY){
@@ -123,7 +148,9 @@ class Sprite {
         Graphics g = image.createGraphics();
         for (int chrY = 0; chrY < height/8; chrY++)
             for (int chrX = 0; chrX < width/8; chrX++)
-                g.drawImage(charset.getImage(4 * chr + chrX + width / 8 * chrY, (byte)pal), 8 * chrX, 8 * chrY, null);
+                g.drawImage(charset.getImage(
+                        4 * chr + chrX + width / 8 * chrY + frame * chrSize, (byte)pal //all 1st argument: character code
+                ), 8 * chrX, 8 * chrY, null);
         
         return image;
     }
