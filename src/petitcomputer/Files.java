@@ -291,6 +291,8 @@ public final class Files {
             for (int j = 0; j < tempBytes.length; j++)
                 tempBytes[j] = (byte) (((tempBytes[j] & 0x0F) << 4) | ((tempBytes[j] & 0xF0) >> 4)); //swap order of nibbles
 
+            in.close();
+            
             return tempBytes;
             
         } catch (FileNotFoundException ex) {
@@ -316,9 +318,8 @@ public final class Files {
             byte[] tempBytes = new byte[MEM_SIZE + 4]; //data + length of string
             in.read(tempBytes);
             
-            //byte[] footer = new byte[4]; //number of bytes in string
-            //in.read(footer);
-
+            in.close();
+            
             return tempBytes;
             
         } catch (FileNotFoundException ex) {
@@ -358,6 +359,7 @@ public final class Files {
             byte[] dat = convertMEM(mem);
             out.write(createHeader(dat, filename.substring(0,8), TYPE_MEM));
             out.write(dat);
+            out.close();
             
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Files.class.getName()).log(Level.SEVERE, null, ex);

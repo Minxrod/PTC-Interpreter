@@ -26,7 +26,8 @@ public class Resources implements ComponentPTC {
     CharsetPTC bguu, bgul;
     CharsetPTC bgd; //only use is on bottom screen
     
-    CharsetPTC spu;
+    CharsetPTC spu, sps;
+    CharsetPTC spd;
     
     COL col0, col1, col2; //BG+FONT, SP, GRP
     
@@ -149,24 +150,46 @@ public class Resources implements ComponentPTC {
      */
     public void load(String type, String name){
         type = type.toLowerCase();
-        name = name.toUpperCase();
+        name = name.toUpperCase() + ".PTC";
         
         switch (type.substring(0, 3)){
             case "prg":
                 //PROGRAM OBJECT LOAD
                 break;
+            case "spu":
+                spu.setData(type.charAt(3) - '0', files.loadCHRBank(name, false));
+                break;
+            case "sps":
+                sps.setData(type.charAt(3) - '0', files.loadCHRBank(name, false));
+                break;
+            case "spd":
+                spd.setData(type.charAt(3) - '0', files.loadCHRBank(name, false));
+                break;
+            case "bgu":
+                this.loadCharset(name, bguu, bgul, type.endsWith("l"));
+                break;
             case "bgf":
-                if (type.endsWith("l")){
-                    bgfl.setData(0, files.loadCHRBank(name + ".PTC", false));
-                } else {
-                    bgfu.setData(0, files.loadCHRBank(name + ".PTC", false));
-                }
+                this.loadCharset(name, bgfu, bgfl, type.endsWith("l"));
+                break;
+            case "bgd":
+                bgd.setData(type.charAt(3) - '0', files.loadCHRBank(name, false));
                 break;
             case "mem":
-                StringPTC mem = files.readMEM(files.loadMEM(name + ".PTC"));
+                StringPTC mem = files.readMEM(files.loadMEM(name));
                 
                 vars.setVariable(VariablesII.SYSTEM_VARIABLES[VariablesII.MEM], mem);
                 break;
+        }
+    }
+    
+    /**
+     *  Helper method that will load 
+     */
+    private void loadCharset(String name, CharsetPTC upper, CharsetPTC lower, boolean isLower){
+        if (isLower){
+            lower.setData(0, files.loadCHRBank(name, false));
+        } else {
+            upper.setData(0, files.loadCHRBank(name, false));
         }
     }
     
