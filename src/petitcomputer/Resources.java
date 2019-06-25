@@ -71,9 +71,16 @@ public class Resources implements ComponentPTC {
             bgd.setData(i, f.loadCHRBank(PATH + "BGD"+i+".PTC", true));
         
         spu = new CharsetPTC(col1, SPU_BANKS);
-        for (int i = 0; i < 8; i++)
+        for (int i = 0; i < SPU_BANKS; i++)
             spu.setData(i, f.loadCHRBank(PATH + "SPU"+i+".PTC", true));
         
+        sps = new CharsetPTC(col1, SPS_BANKS);
+        for (int i = 0; i < SPS_BANKS; i++)
+            sps.setData(i, f.loadCHRBank(PATH + "SPS"+i+".PTC", true));
+        
+        spd = new CharsetPTC(col1, SPD_BANKS);
+        for (int i = 0; i < SPD_BANKS; i++)
+            spd.setData(i, f.loadCHRBank(PATH + "SPD"+i+".PTC", true));
     }
     
     /**
@@ -102,6 +109,14 @@ public class Resources implements ComponentPTC {
     
     public CharsetPTC getSPU(){
         return spu;
+    }
+    
+    public CharsetPTC getSPS(){
+        return sps;
+    }
+    
+    public CharsetPTC getSPD(){
+        return spd;
     }
     
     public COL getCOL0(){
@@ -175,9 +190,14 @@ public class Resources implements ComponentPTC {
                 bgd.setData(type.charAt(3) - '0', files.loadCHRBank(name, false));
                 break;
             case "mem":
-                StringPTC mem = files.readMEM(files.loadMEM(name));
+                byte[] m = files.loadMEM(name);
+                if (m == null)
+                    vars.setVariable(new StringPTC("RESULT"), new NumberPTC(0));
+                else {
+                    StringPTC mem = files.readMEM(m);
                 
-                vars.setVariable(VariablesII.SYSTEM_VARIABLES[VariablesII.MEM], mem);
+                    vars.setVariable(VariablesII.SYSTEM_VARIABLES[VariablesII.MEM], mem);
+                }
                 break;
         }
     }

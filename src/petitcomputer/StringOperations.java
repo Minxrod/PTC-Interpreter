@@ -80,8 +80,14 @@ public class StringOperations {
                 return asc(string);
             case "val":
                 string = (StringPTC) args.get(0);
+                NumberPTC num;
+                try {
+                    num = string.getNumberFromString();
+                } catch (NumberFormatException ex) {
+                    num = new NumberPTC(0);
+                }
                 
-                return string.getNumberFromString();
+                return num;
             case "len":
                 string = (StringPTC) args.get(0);
                 
@@ -113,6 +119,9 @@ public class StringOperations {
      * @return 
      */
     public static StringPTC mid$(StringPTC string, int begin, int length){
+        if (begin >= string.getLength())
+            return new StringPTC(0);
+        
         return string.getSubstring(begin, length);
     }
     

@@ -235,8 +235,8 @@ public final class Files {
             System.err.println(e.getMessage() + Arrays.toString(e.getStackTrace()));
         }
         
-        //for (VariablePTC i : items)
-        //    Debug.print(Debug.FILES_FLAG, i.toString());
+        for (VariablePTC i : items)
+            Debug.print(Debug.FILES_FLAG, i.toString());
         return items;
     }
     
@@ -301,13 +301,21 @@ public final class Files {
         return null;
     }
     
+    /**
+     * Loads a MEM file from the provided filename. If file does not exist,
+     * returns null.
+     * @param filename
+     * @return loaded byte[] of mem, null if file doesn't exist.
+     */
     public byte[] loadMEM(String filename){
         String name = directory + filename;
         try {
             File file = new File(name);
             if (!file.exists()){
                 System.out.println("ERROR: " + file.getName() + " not found.");
-                saveMEM(filename, new StringPTC(0));
+                
+                return null;
+                //saveMEM(filename, new StringPTC(0));
             }
             
             FileInputStream in;
@@ -357,7 +365,7 @@ public final class Files {
             out = new FileOutputStream(file);
             
             byte[] dat = convertMEM(mem);
-            out.write(createHeader(dat, filename.substring(0,8), TYPE_MEM));
+            out.write(createHeader(dat, filename, TYPE_MEM));
             out.write(dat);
             out.close();
             
