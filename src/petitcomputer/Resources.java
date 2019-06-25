@@ -244,10 +244,6 @@ public class Resources implements ComponentPTC {
                 //type and name are set. Now load using given type + name
                 load(type, name);
                 break; 
-                /*MY FILES WERE BEING SAVED WITH JUNK BECAUSE THIS WAS RUNNING 
-                THROUGH TO THE SAVE FUNCTION WITHOUT PROPERLY CHECKING ANYTHING?
-                REALLY? AAAAAAAAAAAAAAAAAAAAAAA
-                */
             case "save":
                 resource = ((StringPTC) eval.eval(args.get(0))).toString();
                 if (resource.contains(":")){

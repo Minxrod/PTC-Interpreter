@@ -14,19 +14,22 @@ import petitcomputer.VirtualDevice.Evaluator;
 public class Sprites implements ComponentPTC {
     Evaluator eval;
     COL col;
-    CharsetPTC chr;
+    CharsetPTC[] chr; //spu and sps
     
     int page;
     Sprite[][] sprites;
 
     /**
      * Creates a sprite manager, initialized with a character set and palette.
-     * @param chrs - character set
+     * @param upper
+     * @param lower
      * @param c - color palette
      * @param e - evaluator
      */
-    public Sprites(CharsetPTC chrs, COL c, Evaluator e){
-        chr = chrs;
+    public Sprites(CharsetPTC upper, CharsetPTC lower, COL c, Evaluator e){
+        chr = new CharsetPTC[2];
+        chr[0] = upper;
+        chr[1] = lower;
         col = c;
         eval = e;
         
@@ -55,7 +58,7 @@ public class Sprites implements ComponentPTC {
                 
                 //create new sprite object
                 sprites[page][spriteID] = new Sprite(cc.getIntNumber(), pal.getIntNumber(), hr.getIntNumber(), vr.getIntNumber(), oop.getIntNumber());
-                sprites[page][spriteID].createImage(chr);
+                sprites[page][spriteID].createImage(chr[page]);
                 break;
             case "spclr":
                 if (args.isEmpty())
@@ -82,14 +85,14 @@ public class Sprites implements ComponentPTC {
                 cc = (NumberPTC) eval.eval(args.get(1));
                 
                 sprites[page][spriteID].spchr(cc.getIntNumber());
-                sprites[page][spriteID].createImage(chr);
+                sprites[page][spriteID].createImage(chr[page]);
                 break;
             case "spscale":
                 spriteID = ((NumberPTC)eval.eval(args.get(0))).getIntNumber();
                 NumberPTC scale = (NumberPTC) eval.eval(args.get(1));
                 
                 sprites[page][spriteID].spscale(scale.getIntNumber());
-                sprites[page][spriteID].createImage(chr);
+                sprites[page][spriteID].createImage(chr[page]);
                 break;
             case "spanim":
                 spriteID = ((NumberPTC)eval.eval(args.get(0))).getIntNumber();
@@ -120,10 +123,10 @@ public class Sprites implements ComponentPTC {
      * Update all sprites by one frame.
      */
     public void updateSprites(){
-        for (Sprite[] sprs : sprites)
-            for (Sprite sp : sprs)
+        for (int p = 0; p < 2; p++)
+            for (Sprite sp : sprites[p])
                 if (sp != null && sp.update())
-                    sp.createImage(chr);
+                    sp.createImage(chr[p]);
     }
     
     /**

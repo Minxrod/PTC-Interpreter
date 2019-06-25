@@ -101,7 +101,7 @@ public class VirtualDevice implements ComponentPTC{
         
         graphics = new Graphic(r.getCOL2(), eval);
         
-        sprites = new Sprites(r.getSPU(), r.getCOL1(), eval);
+        sprites = new Sprites(r.getSPU(), r.getSPS(), r.getCOL1(), eval);
         
         sound = new Sound(eval);
         
@@ -193,6 +193,8 @@ public class VirtualDevice implements ComponentPTC{
             g.drawImage(graphics.createImage(1), 0, 0, null);
         if (visible[V_BG0])
             g.drawImage(bg.createImage(1), 0, 0, null);
+        if (visible[V_SPRITE])
+            sprites.drawImage(g, 0, 1);
         if (visible[V_PANEL])
             g.drawImage(panel.createImage(), 0, 0, null);
         
