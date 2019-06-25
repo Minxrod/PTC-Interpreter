@@ -84,6 +84,22 @@ public class Sprites implements ComponentPTC {
                 sprites[page][spriteID].spchr(cc.getIntNumber());
                 sprites[page][spriteID].createImage(chr);
                 break;
+            case "spscale":
+                spriteID = ((NumberPTC)eval.eval(args.get(0))).getIntNumber();
+                NumberPTC scale = (NumberPTC) eval.eval(args.get(1));
+                
+                sprites[page][spriteID].spscale(scale.getIntNumber());
+                sprites[page][spriteID].createImage(chr);
+                break;
+            case "spanim":
+                spriteID = ((NumberPTC)eval.eval(args.get(0))).getIntNumber();
+                NumberPTC frames = (NumberPTC) eval.eval(args.get(1));
+                NumberPTC time = (NumberPTC) eval.eval(args.get(2));
+                NumberPTC loop = (NumberPTC) eval.eval(args.get(3));
+                
+                sprites[page][spriteID].spanim(frames.getIntNumber(), time.getIntNumber(), loop.getIntNumber());
+                //sprites[page][spriteID].createImage(chr);
+                break;
             default:
                 Debug.print(Debug.ACT_FLAG, "ACT ERROR: " + command);
         }
@@ -106,7 +122,7 @@ public class Sprites implements ComponentPTC {
     public void updateSprites(){
         for (Sprite[] sprs : sprites)
             for (Sprite sp : sprs)
-                if (sp.update())
+                if (sp != null && sp.update())
                     sp.createImage(chr);
     }
     

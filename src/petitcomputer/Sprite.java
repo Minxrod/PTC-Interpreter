@@ -16,24 +16,24 @@ import java.awt.image.BufferedImage;
  * @author minxr
  */
 class Sprite {
-    int width, height;
-    final int chrSize;
-    int chr, pal;
-    int horiz, vert;
-    int priority;
+    private int width, height;
+    private final int chrSize;
+    private int chr, pal;
+    private int horiz, vert;
+    private int priority;
     
-    int homeX, homeY;
+    private int homeX, homeY;
     
-    double x, y;
-    double moveX, moveY; int moveTime;
-    int frame, animTime, animFrames, animMaxTime, animLoop;
-    double angle, angleStep; int angleTime;
-    int scale, scaleStep, scaleTime;
+    private double x, y;
+    private double moveX, moveY; int moveTime;
+    private int frame, animTime, animFrames, animMaxTime, animLoop;
+    private double angle, angleStep; int angleTime;
+    private int scale, scaleStep, scaleTime;
     
-    int hitboxX, hitboxY, hitboxW, hitboxH;
-    int hitboxDX, hitboxDY; //displacement xy. I really don't know how this works.
-    boolean scaleAdjustment;
-    int hitboxMask;
+    private int hitboxX, hitboxY, hitboxW, hitboxH;
+    private int hitboxDX, hitboxDY; //displacement xy. I really don't know how this works.
+    private boolean scaleAdjustment;
+    private int hitboxMask;
     
     NumberPTC[] vars;
     
@@ -61,6 +61,7 @@ class Sprite {
         priority = o;
         homeX = 0;
         homeY = 0;
+        scale = 100;
         
         chrSize = w * h / 64;
         vars = new NumberPTC[8];
@@ -89,6 +90,7 @@ class Sprite {
         priority = o;
         homeX = 0;
         homeY = 0;
+        scale = 100;
         
         chrSize = 4;
         vars = new NumberPTC[8];
@@ -107,22 +109,29 @@ class Sprite {
            y += moveY;
            moveTime--;
         }
-        //frame, animFrames, animTime, animLoop
         
         if (animFrames > 1){
             animTime--;
-            if (animTime == 0){ //1 frame end
+            if (animTime == 0){ //single frame end
                 animTime = animMaxTime;
                 
                 needsUpdate = true;
                 frame++;
                 if (frame == animFrames){ //loop complete
-                    frame--; //stops on last frame
                     animLoop--;
-                    if (animLoop == 0) //all loops complete
-                        animFrames = 1;
+                    if (animLoop == 0){ //all loops complete
+                        animFrames = 1; //no more animation; frame remains last frame
+                    } else
+                        frame = 0; //reset loop,
+
                 }
             }
+        }
+        
+        if (scaleTime > 0){
+            scale += scaleStep;
+            scaleTime--;
+            needsUpdate = true;
         }
         
         return needsUpdate;
@@ -143,21 +152,37 @@ class Sprite {
         chr = c;
     }
     
+    public void spscale(int sc){
+        scale = sc;
+    }
+    
+    public void spanim(int frames, int time, int loop){
+        animFrames = frames;
+        frame = 0;
+        animMaxTime = time;
+        animTime = animMaxTime;
+        animLoop = loop;
+    }
+    
     public Image createImage(CharsetPTC charset){
-        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        if (scale == 0)
+            return null;
+        double scalePercent = scale / 100;
+        image = new BufferedImage((int)(width * scalePercent), (int) (height * scalePercent), BufferedImage.TYPE_INT_ARGB);
         Graphics g = image.createGraphics();
         for (int chrY = 0; chrY < height/8; chrY++)
             for (int chrX = 0; chrX < width/8; chrX++)
                 g.drawImage(charset.getImage(
                         4 * chr + chrX + width / 8 * chrY + frame * chrSize, (byte)pal //all 1st argument: character code
-                ), 8 * chrX, 8 * chrY, null);
+                ).getScaledInstance((int) (8 * scalePercent), (int) (8 * scalePercent), Image.SCALE_FAST),
+                        (int) (scalePercent * 8 * chrX), (int) (scalePercent * 8 * chrY), null);
         
         return image;
     }
     
     public void draw(Graphics g){
         if (image != null){
-            //to add: rotation, scale, clip(200range)
+            //to add: rotation, clip(200range)
             g.drawImage(image, (int) x - homeX, (int) y - homeY, null);
         }
     }

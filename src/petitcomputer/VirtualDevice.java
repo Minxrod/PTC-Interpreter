@@ -130,10 +130,12 @@ public class VirtualDevice implements ComponentPTC{
     }
     
     /**
-     * Updates the frame counter.
+     * Updates the frame counter, as well as verious objects needing per-frame updates.
      */
     public void advFrame(){
         maincnt++;
+        
+        sprites.updateSprites();
     }
     
     /**
