@@ -28,7 +28,7 @@ class Sprite {
     private double moveX, moveY; int moveTime;
     private int frame, animTime, animFrames, animMaxTime, animLoop;
     private double angle, angleStep; int angleTime;
-    private int scale, scaleStep, scaleTime;
+    private double scale, scaleStep; int scaleTime;
     
     private int hitboxX, hitboxY, hitboxW, hitboxH;
     private int hitboxDX, hitboxDY; //displacement xy. I really don't know how this works.
@@ -123,7 +123,6 @@ class Sprite {
                         animFrames = 1; //no more animation; frame remains last frame
                     } else
                         frame = 0; //reset loop,
-
                 }
             }
         }
@@ -156,6 +155,11 @@ class Sprite {
         scale = sc;
     }
     
+    public void spscale(int sc, int time){
+        scaleStep = (sc - scale) / time;
+        scaleTime = time;
+    }
+    
     public void spanim(int frames, int time, int loop){
         animFrames = frames;
         frame = 0;
@@ -182,8 +186,10 @@ class Sprite {
     
     public void draw(Graphics g){
         if (image != null){
-            //to add: rotation, clip(200range)
+            //to add: rotation
+            g.clipRect((int) x - homeX, (int) (y - homeY), 128, 128);
             g.drawImage(image, (int) x - homeX, (int) y - homeY, null);
+            g.setClip(null);
         }
     }
 }

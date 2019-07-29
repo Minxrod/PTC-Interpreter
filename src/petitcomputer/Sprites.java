@@ -91,7 +91,13 @@ public class Sprites implements ComponentPTC {
                 spriteID = ((NumberPTC)eval.eval(args.get(0))).getIntNumber();
                 NumberPTC scale = (NumberPTC) eval.eval(args.get(1));
                 
-                sprites[page][spriteID].spscale(scale.getIntNumber());
+                if (args.size() == 3) {
+                    NumberPTC time = (NumberPTC) eval.eval(args.get(2));
+                    
+                    sprites[page][spriteID].spscale(scale.getIntNumber(), time.getIntNumber());
+                } else {
+                    sprites[page][spriteID].spscale(scale.getIntNumber());
+                }
                 sprites[page][spriteID].createImage(chr[page]);
                 break;
             case "spanim":
