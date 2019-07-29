@@ -238,6 +238,7 @@ class Console implements ComponentPTC {
             characters[currentY][currentX] = text.getCharacter(i);
             
             color[currentY][currentX] = (byte) currentColor;
+            bgcolor[currentY][currentX] = (byte) currentBG;
             //g.drawImage(font.getImage(Byte.toUnsignedInt(text.getCharacter(i)), (byte) currentColor), currentX * 8, currentY * 8, null);
             if ((currentX == CONSOLE_WIDTH - 1 && currentY == CONSOLE_HEIGHT - 1 && i == text.getLength() - 1))
                 ; //don't advance cursor if a semicolon was encountered at the end AND you are at the edge of the console already.
@@ -271,6 +272,7 @@ class Console implements ComponentPTC {
     
     private void tab(){
         do {
+            bgcolor[currentY][currentX] = (byte) currentBG;
             advanceCursor();
         } while (currentX % 4 != 0);//whatever the tab calculator is
     }
@@ -313,17 +315,19 @@ class Console implements ComponentPTC {
         color = new byte[CONSOLE_HEIGHT][CONSOLE_WIDTH];
         bgcolor = new byte[CONSOLE_HEIGHT][CONSOLE_WIDTH];
         
-        //for (int y = 0; y < CONSOLE_HEIGHT; y++){
-        //    for (int x = 0; x < CONSOLE_WIDTH; x++){
-        //        characters[y][x] = 0;
-        //        color[y][x] = 0;
-        //    }
-        //}
+        for (int y = 0; y < CONSOLE_HEIGHT; y++){
+            for (int x = 0; x < CONSOLE_WIDTH; x++){
+                characters[y][x] = 0;
+                color[y][x] = (byte) currentColor;
+                bgcolor[y][x] = (byte) currentBG;
+            }
+        }
     
         currentX = 0;
         currentY = 0;
-        currentColor = 0;
-        currentBG = 0;
+        //NOT RESET ON CLS:
+        //currentColor = 0;
+        //currentBG = 0;
         
         //OLD://creates (or recreates) an image for the console to draw to.
         //image = new BufferedImage(PetitComGUI.WINDOW_WIDTH, PetitComGUI.WINDOW_HEIGHT, BufferedImage.TYPE_BYTE_INDEXED, colors.getICM256());
@@ -427,7 +431,7 @@ class Console implements ComponentPTC {
                 int col = bgcolor[y][x];
                 if (col != 0){ //draw bg color
                     drawToImage.setColor(colors.getColor(col * 16 + 15));
-                    drawToImage.fillRect(8 * x,8 * y,8 * x + 7, 8 * y + 7);
+                    drawToImage.fillRect(8 * x, 8 * y, 8, 8);
                 }
                 drawToImage.drawImage(font.getImage(character, color[y][x]), 8 * x, 8 * y, null);
             }
