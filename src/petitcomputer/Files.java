@@ -50,7 +50,7 @@ public final class Files {
     private final char[] ucs2;
     
     public Files(){
-        directory = "src/resource/";
+        directory = Resources.PATH;
         ucs2 = new char[MEM_SIZE/2];
         byte tempUCS2[] = loadMEM("MCHRENC.PTC");
         for (int i = 0; i < MEM_SIZE; i+=2){

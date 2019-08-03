@@ -8,7 +8,7 @@ import petitcomputer.VirtualDevice.Evaluator;
  * @author minxr
  */
 public class Resources implements ComponentPTC {
-    public static final String PATH = "src/resource/";
+    public static final String PATH = "resource/";
     
     private static final int
             BGU_BANKS = 4,
