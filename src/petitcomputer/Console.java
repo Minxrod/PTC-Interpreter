@@ -157,15 +157,58 @@ class Console implements ComponentPTC {
     }
     
     /**
-     * Command to receive text input from the user and store it to the given variable. Cannot type more than one character per key press (no key-repeat).
-     * @param text
-     * @param variable 
+     * Modified text input - accepts commas and only one string variable can be
+     * requested at a given time. (Ironically, this is literally the original 
+     * INPUT function, ignoring the "strings only" part.)
+     * @param text - guiding text string
+     * @param var - variable name
      */
-    public void input(StringPTC text, ArrayList<VariablePTC> variable){
-         StringPTC msg = text.getSubstring(0, text.getLength());
-         msg.add(Char.QUESTION.getStringPTC());
-         msg.setLine(false);
-         print(msg);
+    public void linput(StringPTC text, ArrayList<VariablePTC> var){
+        StringPTC result = textInput(text);
+        
+        vars.setVariable(var, result);
+    }
+    
+    /**
+     * Command to receive text input from the user and store it to the given variable.
+     * Cannot type more than one character per key press (no key-repeat).
+     * @param text
+     * @param var 
+     */
+    public void input(StringPTC text, ArrayList<ArrayList> var){
+        StringPTC result = textInput(text);
+        
+        //additional parsing for commas + storing to all vars.
+        StringPTC subResult;
+        int comma = -1;
+        int nextComma = -1; //also marks the end, if necessary.
+        do {
+            //get comma location + next comma OR end-of-line
+            comma = nextComma;
+            nextComma = result.inString(comma+1, CharacterPTC.COMMA);
+            if (nextComma < 0)
+                nextComma = result.getLength();
+            //get substring from comma locations
+            subResult = result.getSubstring(comma+1, nextComma - comma - 1);
+            
+            //NOTE: remove takes the element AND removes it. 
+            //Just iterate over the variables to store each result.
+            ArrayList<VariablePTC> v = var.remove(0);
+            
+            if (vars.getVariable(v).getType() == VariablePTC.NUMBER_LITERAL)
+                vars.setVariable(v, subResult.getNumberFromString());
+            else
+                vars.setVariable(v, subResult);
+        } while (nextComma < result.getLength());
+        
+        
+    }
+    
+    private StringPTC textInput(StringPTC text){
+        StringPTC msg = text.getSubstring(0, text.getLength());
+        msg.add(Char.QUESTION.getStringPTC());
+        //msg.setLine(false);
+        print(msg);
         
         int x = currentX; //input start location.
         int y = currentY; //save location for display
@@ -188,7 +231,7 @@ class Console implements ComponentPTC {
                 in.waitForReset(); //wait for character to be released to prevent RAPID-FIRE TYPING!
             } else if (in.keyboard() != 0 && in.keyboard() != 60){
                 result.setCharacter(c, in.inkey().getCharacter(0));
-                if (c < 256)
+                if (c < CONSOLE_WIDTH) //turns out you can't type more than one line.
                     c++; //I thought this was Java? /*please forgive me*/
                 in.waitForReset(); //same as before...
             }
@@ -196,11 +239,7 @@ class Console implements ComponentPTC {
         in.waitForReset();
         print(Char.NULL.getStringPTC()); //don't remember what the goal was with this, leaving it anyways
         
-        System.out.println("INPUT var to store NAME: " + variable.toString());
-        if (vars.getVariable(variable).getType() == VariablePTC.NUMBER_LITERAL)
-            vars.setVariable(variable, result.getNumberFromString());
-        else //it's a string.
-            vars.setVariable(variable, result);
+        return result;
     }
     
     /**
@@ -376,21 +415,35 @@ class Console implements ComponentPTC {
                     color(col);
                 break;
             case "input":
+                StringPTC text;
                 if (arguments.get(0).size() > 1){
                     //System.out.println(arguments.toString());
-                    StringPTC text = (StringPTC) arguments.get(0).get(0);
+                    text = (StringPTC) arguments.get(0).get(0);
                     arguments.get(0).remove(0); //remove string
                     arguments.get(0).remove(0); //remove semicolon
-                    ArrayList var = arguments.get(0); //get first element of second argument. 
-                
-                    input(text, var);
                 } else {
-                    StringPTC text = new StringPTC("");
-                    
-                    ArrayList var = arguments.get(0);
-                    
-                    input(text, var);
+                    text = new StringPTC("");
                 }
+                
+                input(text, arguments);
+                setSystemVariables();
+                break;
+            case "linput":
+                //StringPTC text; //why are redefining in break not allowed :(
+                ArrayList var;
+                
+                if (arguments.get(0).size() > 1){
+                    //System.out.println(arguments.toString());
+                    text = (StringPTC) arguments.get(0).get(0);
+                    arguments.get(0).remove(0); //remove string
+                    arguments.get(0).remove(0); //remove semicolon
+                    //these are removed so that the variable name is all that's left.
+                } else {
+                    text = new StringPTC("");
+                }
+                var = arguments.get(0); //get variable name
+                
+                linput(text, var);
                 setSystemVariables();
                 break;
             default:

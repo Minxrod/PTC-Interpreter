@@ -290,6 +290,7 @@ public class VirtualDevice implements ComponentPTC{
             //case "cls": actually affects PANEL as well
             case "color":
             case "input":
+            case "linput":
             case "chkchr":
                 group = GROUP_CONSOLE;
                 break;
