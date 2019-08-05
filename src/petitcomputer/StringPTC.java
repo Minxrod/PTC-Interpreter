@@ -70,10 +70,10 @@ public class StringPTC extends VariablePTC {
      * @return 
      */
     public int inString(byte character){
-        return inString((byte)0, character);
+        return inString(0, character);
     }
     
-    public int inString(byte startPos, byte character){
+    public int inString(int startPos, byte character){
         for (int i = startPos; i < string.length; i++)
             if (string[i] == character)
                 return i;
