@@ -179,6 +179,14 @@ class Sprite {
         chr = c;
     }
     
+    public void spchr(int c, int p, int h, int v, int o){
+        chr = c;
+        pal = p;
+        horiz = h;
+        vert = v;
+        priority = o;
+    }
+    
     public void spscale(int sc){
         scale = sc;
     }
@@ -210,13 +218,18 @@ class Sprite {
             return null;
         double scalePercent = scale / 100;
         image = new BufferedImage((int)(width * scalePercent), (int) (height * scalePercent), BufferedImage.TYPE_INT_ARGB);
-        Graphics g = image.createGraphics(); 
+        Graphics2D g = image.createGraphics(); 
+        g.translate(horiz * image.getWidth(), vert * image.getHeight());
+        g.scale(1 - 2 *horiz, 1 - 2 * vert);
+        
         for (int chrY = 0; chrY < height/8; chrY++)
-            for (int chrX = 0; chrX < width/8; chrX++)
-                g.drawImage(charset.getImage(
+            for (int chrX = 0; chrX < width/8; chrX++){
+                g.drawImage(
+                    charset.getImage(
                         4 * chr + chrX + width / 8 * chrY + frame * chrSize, (byte)pal //all 1st argument: character code
-                ).getScaledInstance((int) (8 * scalePercent), (int) (8 * scalePercent), Image.SCALE_FAST),
+                    ).getScaledInstance((int) (8 * scalePercent), (int) (8 * scalePercent), Image.SCALE_FAST),
                         (int) (scalePercent * 8 * chrX), (int) (scalePercent * 8 * chrY), null);
+            }
         
         return image;
     }
@@ -228,12 +241,15 @@ class Sprite {
             
             //used as source: https://gamedev.stackexchange.com/questions/62196/rotate-image-around-a-specified-origin
             AffineTransform backup = g.getTransform();
-            AffineTransform rotate = new AffineTransform();
-            rotate.rotate(Math.toRadians(angle), x, y);
+            AffineTransform transform = new AffineTransform();
+
+            transform.translate(x, y);
+            //transform.scale(1 - (2 * horiz), 1 - (2 * vert));
+            transform.rotate(Math.toRadians(angle));
             
-            g.setTransform(rotate);
-            g.clipRect(drawX, drawY, 128, 128);
-            g.drawImage(image, drawX, drawY, null);
+            g.setTransform(transform);
+            g.clipRect(-homeX, -homeY, 128, 128);
+            g.drawImage(image, -homeX, -homeY, null);
             g.setTransform(backup);
             g.setClip(null);
         }

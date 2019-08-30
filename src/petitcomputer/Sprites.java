@@ -56,9 +56,19 @@ public class Sprites implements ComponentPTC {
                 NumberPTC hr = (NumberPTC) eval.eval(args.get(3));
                 NumberPTC vr = (NumberPTC) eval.eval(args.get(4));
                 NumberPTC oop = (NumberPTC) eval.eval(args.get(5));
+                NumberPTC width;
+                NumberPTC height;
+                if (args.size() > 6){
+                    width = (NumberPTC) eval.eval(args.get(6));
+                    height = (NumberPTC) eval.eval(args.get(7));
+                } else {
+                    width = new NumberPTC(16);
+                    height = width; //also 16
+                }
                 
                 //create new sprite object
-                sprites[page][spriteID] = new Sprite(cc.getIntNumber(), pal.getIntNumber(), hr.getIntNumber(), vr.getIntNumber(), oop.getIntNumber());
+                sprites[page][spriteID] = new Sprite(cc.getIntNumber(), pal.getIntNumber(), hr.getIntNumber(), vr.getIntNumber(), oop.getIntNumber(),
+                                                     width.getIntNumber(), height.getIntNumber());
                 sprites[page][spriteID].createImage(chr[page]);
                 break;
             case "spclr":
@@ -85,7 +95,17 @@ public class Sprites implements ComponentPTC {
                 spriteID = ((NumberPTC)eval.eval(args.get(0))).getIntNumber();
                 cc = (NumberPTC) eval.eval(args.get(1));
                 
-                sprites[page][spriteID].spchr(cc.getIntNumber());
+                if (args.size() > 2){
+                    pal = (NumberPTC) eval.eval(args.get(2));
+                    hr = (NumberPTC) eval.eval(args.get(3));
+                    vr = (NumberPTC) eval.eval(args.get(4));      
+                    oop = (NumberPTC) eval.eval(args.get(5));
+                    
+                    sprites[page][spriteID].spchr(cc.getIntNumber(), pal.getIntNumber(), hr.getIntNumber(), vr.getIntNumber(), oop.getIntNumber());
+                    
+                } else {
+                    sprites[page][spriteID].spchr(cc.getIntNumber());
+                }
                 sprites[page][spriteID].createImage(chr[page]);
                 break;
             case "spscale":
