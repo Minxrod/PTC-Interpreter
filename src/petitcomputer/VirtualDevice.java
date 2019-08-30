@@ -1,6 +1,7 @@
 package petitcomputer;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -170,7 +171,7 @@ public class VirtualDevice implements ComponentPTC{
     
     private Image getTopImage(){
         BufferedImage image = new BufferedImage(256, 192, BufferedImage.TYPE_INT_ARGB);
-        Graphics g = image.createGraphics();
+        Graphics2D g = image.createGraphics();
         
         //actual draw order will be based on draw priority, but this is unfinished for now.
         if (visible[V_GRAPHIC])
@@ -186,7 +187,7 @@ public class VirtualDevice implements ComponentPTC{
     }
     private Image getBottomImage(){
         BufferedImage image = new BufferedImage(256, 192, BufferedImage.TYPE_INT_ARGB);
-        Graphics g = image.createGraphics();
+        Graphics2D g = image.createGraphics();
         
         //panel!
         if (visible[V_GRAPHIC])

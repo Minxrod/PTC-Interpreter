@@ -1,6 +1,7 @@
 package petitcomputer;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 import petitcomputer.VirtualDevice.Evaluator;
 
@@ -100,6 +101,18 @@ public class Sprites implements ComponentPTC {
                 }
                 sprites[page][spriteID].createImage(chr[page]);
                 break;
+            case "spangle":
+                spriteID = ((NumberPTC)eval.eval(args.get(0))).getIntNumber();
+                NumberPTC angle = (NumberPTC) eval.eval(args.get(1));
+                
+                if (args.size() == 3) {
+                    NumberPTC time = (NumberPTC) eval.eval(args.get(2));
+                    
+                    sprites[page][spriteID].spangle(angle.getIntNumber(), time.getIntNumber());
+                } else {
+                    sprites[page][spriteID].spangle(angle.getIntNumber());
+                }
+                break;                
             case "spanim":
                 spriteID = ((NumberPTC)eval.eval(args.get(0))).getIntNumber();
                 NumberPTC frames = (NumberPTC) eval.eval(args.get(1));
@@ -142,7 +155,7 @@ public class Sprites implements ComponentPTC {
      * @param prio - priority of draw
      * @param page - upper screen if 0, lower if 1
      */
-    public void drawImage(Graphics g, int prio, int page){
+    public void drawImage(Graphics2D g, int prio, int page){
         for (int i = 99; i >= 0; i--){
             if (sprites[page][i] != null){
                 sprites[page][i].draw(g);
