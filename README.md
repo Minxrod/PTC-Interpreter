@@ -2,6 +2,8 @@
 Interpreter/Emulator for Petit Computer.
 Written in Java using Swing.
 
+## Note: This version is discontinued. Please see https://github.com/Minxrod/PTC-EmkII for the new version.
+
 # How to use
 Compile and run the program.
 
